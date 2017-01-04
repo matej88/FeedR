@@ -3,6 +3,8 @@ package se.chalmers.exjobb.feedr;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,9 +15,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
+import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
+import se.chalmers.exjobb.feedr.models.Course;
+
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        CourseListFragment.OnCourseSelectedListener{
+    private DatabaseReference mDataRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,8 +37,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+              //  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+              //          .setAction("Action", null).show();
+
+
+
             }
         });
 
@@ -40,6 +53,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Add Course List Fragment whenever the Activity is created, make that fragment the main page
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragment_container, new CourseListFragment());
+        ft.commit();
     }
 
     @Override
@@ -77,25 +96,36 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        Fragment switchTo = null;
+
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        switch(item.getItemId()){
+            case R.id.nav_courses:
+                switchTo = new CourseListFragment();
+                break;
+            case R.id.nav_surveys:
+                break;
+            case R.id.nav_logout:
+                break;
 
         }
 
+        if(switchTo != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, switchTo);
+            ft.commit();
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onCourseSelected(Course selectedCourse,String courseKey) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey);
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
     }
 }
