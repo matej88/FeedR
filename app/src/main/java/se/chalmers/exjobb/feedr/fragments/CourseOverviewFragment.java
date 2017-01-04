@@ -2,6 +2,7 @@ package se.chalmers.exjobb.feedr.fragments;
 
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,13 +33,16 @@ public class CourseOverviewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_COURSE = "course";
     private static final String ARG_COURSEKEY = "courseKey";
-    private static final String FEEDBACKS = "feedbacks";
+    private static final String ARG_RATINGS = "ratings";
+
+    // private static final String FEEDBACKS = "feedbacks";
 
     private Course mCourse;
     private String courseKey;
+    private ArrayList<Double> ratings;
 
-    private DatabaseReference mDataRef;
-    private DatabaseReference mRatingsRef;
+    //private DatabaseReference mDataRef;
+   // private DatabaseReference mRatingsRef;
 
 
 
@@ -55,12 +59,12 @@ public class CourseOverviewFragment extends Fragment {
      * @return A new instance of fragment CourseOverviewFragment.
      */
 
-    public static CourseOverviewFragment newInstance(Course course, String courseKey) {
+    public static CourseOverviewFragment newInstance(Course course, String courseKey, ArrayList<Double> theratings) {
         CourseOverviewFragment fragment = new CourseOverviewFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_COURSE, course);
         args.putString(ARG_COURSEKEY, courseKey);
-
+        args.putParcelableArrayList(ARG_RATINGS, theratings);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,36 +86,36 @@ public class CourseOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
-        final List<Double> ratings = new ArrayList<>();
+        //final List<Double> ratings = new ArrayList<>();
 
-        mDataRef = FirebaseDatabase.getInstance().getReference();
-        mRatingsRef = mDataRef.child(FEEDBACKS);
-        ratings.clear();
-        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-
-                while(children.hasNext()){
-                    DataSnapshot item = children.next();
-                    Feedback feed;
-                    double rating;
-                    feed = item.getValue(Feedback.class);
-                    rating = feed.getRating();
-                    ratings.add(rating);
-
-                }
-
-                Toast.makeText(getActivity(), String.valueOf(ratings.size()), Toast.LENGTH_LONG);
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        //mDataRef = FirebaseDatabase.getInstance().getReference();
+        //mRatingsRef = mDataRef.child(FEEDBACKS);
+       // ratings.clear();
+//        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+//
+//                while(children.hasNext()){
+//                    DataSnapshot item = children.next();
+//                    Feedback feed;
+//                    double rating;
+//                    feed = item.getValue(Feedback.class);
+//                    rating = feed.getRating();
+//                    ratings.add(rating);
+//
+//                }
+//
+//                Toast.makeText(getActivity(), String.valueOf(ratings.size()), Toast.LENGTH_LONG);
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
 

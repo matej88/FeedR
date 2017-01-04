@@ -14,13 +14,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
 import se.chalmers.exjobb.feedr.models.Course;
+import se.chalmers.exjobb.feedr.models.Feedback;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -59,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, new CourseListFragment());
         ft.commit();
+
+        mDataRef = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -123,9 +134,45 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onCourseSelected(Course selectedCourse,String courseKey) {
+        ArrayList<Double>ratings = getTheRatings(courseKey);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey);
+        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey,ratings);
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    public ArrayList<Double> getTheRatings(String courseKey){
+
+        //MAKE IT double[]
+        final ArrayList<Double> ratings = new ArrayList<Double>();
+        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
+        ratings.clear();
+        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+
+                while(children.hasNext()){
+                    DataSnapshot item = children.next();
+                    Feedback feed;
+                    double rating;
+                    feed = item.getValue(Feedback.class);
+                    rating = feed.getRating();
+                    ratings.add(rating);
+
+                }
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return ratings;
     }
 }
