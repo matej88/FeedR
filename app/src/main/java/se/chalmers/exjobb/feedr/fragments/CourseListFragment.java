@@ -79,8 +79,7 @@ public class CourseListFragment extends Fragment {
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ArrayList<Feedback> temp = getTheRatings(courseKey);
-                                mClickListener.onCourseSelected(selC, courseKey, temp);
+                                mClickListener.onCourseSelected(selC, courseKey);
                                 }
                         });
                     }
@@ -124,33 +123,8 @@ public class CourseListFragment extends Fragment {
 
     }
 
-    public ArrayList<Feedback> getTheRatings(String courseKey) {
-        final ArrayList<Feedback> temp = new ArrayList<Feedback>();
-        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
-        mRatingsRef.orderByChild(courseKey).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-
-                while(children.hasNext()){
-                    DataSnapshot item = children.next();
-                    Feedback feed;
-                    feed = item.getValue(Feedback.class);
-                    temp.add(feed);
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        return temp;
-    }
 
     public interface OnCourseSelectedListener {
-        void onCourseSelected(Course selectedCourse, String courseKey, ArrayList<Feedback> ratings);
+        void onCourseSelected(Course selectedCourse, String courseKey);
     }
 }

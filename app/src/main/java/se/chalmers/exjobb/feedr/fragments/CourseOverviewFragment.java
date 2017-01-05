@@ -2,15 +2,14 @@ package se.chalmers.exjobb.feedr.fragments;
 
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,11 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.adapters.CourseTabViewPagerAdapter;
@@ -38,16 +33,17 @@ public class CourseOverviewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_COURSE = "course";
     private static final String ARG_COURSEKEY = "courseKey";
-    private static final String ARG_RATINGS = "ratings";
 
-    //private static final String FEEDBACKS = "feedbacks";
+    private static final String FEEDBACKS = "feedbacks";
 
     private Course mCourse;
     private String courseKey;
-    private ArrayList<Feedback> mRatings;
 
     private double mCurrentRating;
 
+    private TextView courseRating;
+
+    private ArrayList<Feedback> feeds = new ArrayList<>();
     // Stores two fragments on the main page
     private ViewPager mViewPagerSingleCourse;
 
@@ -72,13 +68,12 @@ public class CourseOverviewFragment extends Fragment {
      * @return A new instance of fragment CourseOverviewFragment.
      */
 
-    public static CourseOverviewFragment newInstance(Course course, String courseKey, ArrayList<Feedback> ratings) {
+    public static CourseOverviewFragment newInstance(Course course, String courseKey) {
         CourseOverviewFragment fragment = new CourseOverviewFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_COURSE, course);
         args.putString(ARG_COURSEKEY, courseKey);
 
-        args.putParcelableArrayList(ARG_RATINGS, ratings);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,11 +84,38 @@ public class CourseOverviewFragment extends Fragment {
         if (getArguments() != null) {
             mCourse = getArguments().getParcelable(ARG_COURSE);
             courseKey = getArguments().getString(ARG_COURSEKEY);
-            mRatings = getArguments().getParcelableArrayList(ARG_RATINGS);
-
-
         }
+            Log.d("CourseFragment", "onCreate");
 
+
+
+        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
+
+        mFeedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("onDataChange", "inside the listener");
+
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                for(DataSnapshot child : children){
+                    Feedback feed = child.getValue(Feedback.class);
+                    feeds.add(feed);
+                }
+
+                Log.d("onDataChange", "size of feeds array" + feeds.size());
+
+                mCurrentRating = getRating(feeds);
+                courseRating.setText(Double.toString(mCurrentRating));
+                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("onCancelled", "inside onCanceled");
+            }
+        });
 
 
 
@@ -104,20 +126,31 @@ public class CourseOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
-
+        Log.d("onCreateView", "inside onCreateView");
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
-        TextView courseRating = (TextView) view.findViewById(R.id.course_overview_rating);
-        calculateRating(mRatings);
-        courseName.setText(mCourse.getName());
-        courseCode.setText(courseKey);
-        setupTabs(view);
-        courseRating.setText(Double.toString(mCurrentRating));
+        courseRating = (TextView) view.findViewById(R.id.course_overview_rating);
 
+        courseName.setText(mCourse.getName());
+        courseCode.setText(mCourse.getCode());
+        setupTabs(view);
 
         return view;
     }
 
+    public double getRating(ArrayList<Feedback> feeds){
+        Log.d("getRating", "Inside getRatings and the size of the array is " + feeds.size());
+
+        int totalNrOfRatings = feeds.size();
+        int ratingsAdded = 0;
+
+        for(int i = 0; i < totalNrOfRatings; i++){
+            ratingsAdded += feeds.get(i).getRating();
+        }
+
+        double temp = ratingsAdded/totalNrOfRatings;
+        return temp;
+    }
     public void setupTabs(View view){
         mViewPagerSingleCourse = (ViewPager) view.findViewById(R.id.viewpager_single_course);
         //  if there are fragments added to ViewPager then set it up
@@ -152,26 +185,12 @@ public class CourseOverviewFragment extends Fragment {
     // Populate the adapter with fragments
     private void setupViewPager(ViewPager mViewPager){
         CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFrag(new SurveyTabFragment(), "Surveys");
+        Fragment fragment = SurveyListTabFragment.newInstance(courseKey);
+        adapter.addFrag(fragment, "Surveys");
 
 
         mViewPager.setAdapter(adapter);
     }
-    public void calculateRating(ArrayList<Feedback> ratings){
 
-            int nrOfRatings = ratings.size();
-            int combRatings = 0;
-            for(int i = 0; i < nrOfRatings ; i++){
-                    combRatings += ratings.get(i).getRating();
-            }
-
-            if(nrOfRatings != 0) {
-                mCurrentRating = combRatings / nrOfRatings;
-            }
-            else{
-                mCurrentRating = 1337;
-            }
-
-    }
 
 }

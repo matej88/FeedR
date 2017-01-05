@@ -1,5 +1,6 @@
 package se.chalmers.exjobb.feedr;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,12 +29,14 @@ import java.util.List;
 
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
+import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        CourseListFragment.OnCourseSelectedListener{
+        CourseListFragment.OnCourseSelectedListener,
+        SurveyListTabFragment.OnSurveyClickListener{
     private DatabaseReference mDataRef;
     private double[] dRatings;
     @Override
@@ -134,12 +137,17 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCourseSelected(Course selectedCourse,String courseKey, ArrayList<Feedback> ratings) {
+    public void onCourseSelected(Course selectedCourse,String courseKey) {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey,ratings);
+        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey);
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    @Override
+    public void onSurveyClicked(Uri uri) {
+
     }
 
 

@@ -12,12 +12,12 @@ public class Feedback implements Parcelable {
     private String username;
     private String courseKey;
     private String feedback;
-    private double rating;
+    private int rating;
 
     public Feedback(){
 
     }
-    public Feedback(String username, String courseKey, String feedback, double rating) {
+    public Feedback(String username, String courseKey, String feedback, int rating) {
         this.username = username;
         this.courseKey = courseKey;
         this.feedback = feedback;
@@ -28,7 +28,7 @@ public class Feedback implements Parcelable {
         username = in.readString();
         courseKey = in.readString();
         feedback = in.readString();
-        rating = in.readDouble();
+        rating = in.readInt();
     }
 
     public static final Creator<Feedback> CREATOR = new Creator<Feedback>() {
@@ -67,7 +67,7 @@ public class Feedback implements Parcelable {
         this.feedback = feedback;
     }
 
-    public double getRating() {
+    public int getRating() {
         return rating;
     }
 
@@ -85,6 +85,6 @@ public class Feedback implements Parcelable {
         parcel.writeString(username);
         parcel.writeString(courseKey);
         parcel.writeString(feedback);
-        parcel.writeDouble(rating);
+        parcel.writeInt(rating);
     }
 }
