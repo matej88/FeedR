@@ -13,11 +13,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.models.Course;
+import se.chalmers.exjobb.feedr.models.Feedback;
 
 
 public class CourseListFragment extends Fragment {
@@ -72,7 +79,8 @@ public class CourseListFragment extends Fragment {
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                mClickListener.onCourseSelected(selC, courseKey);
+                                ArrayList<Feedback> temp = getTheRatings(courseKey);
+                                mClickListener.onCourseSelected(selC, courseKey, temp);
                                 }
                         });
                     }
@@ -96,6 +104,7 @@ public class CourseListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mClickListener = null;
+
     }
 
     public static class CoursesViewHolder extends RecyclerView.ViewHolder {
@@ -110,9 +119,38 @@ public class CourseListFragment extends Fragment {
             courseCodeTextView = (TextView) itemView.findViewById(R.id.list_course_code);
         }
 
+
+
+
+    }
+
+    public ArrayList<Feedback> getTheRatings(String courseKey) {
+        final ArrayList<Feedback> temp = new ArrayList<Feedback>();
+        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
+        mRatingsRef.orderByChild(courseKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+
+                while(children.hasNext()){
+                    DataSnapshot item = children.next();
+                    Feedback feed;
+                    feed = item.getValue(Feedback.class);
+                    temp.add(feed);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return temp;
     }
 
     public interface OnCourseSelectedListener {
-        void onCourseSelected(Course selectedCourse, String courseKey);
+        void onCourseSelected(Course selectedCourse, String courseKey, ArrayList<Feedback> ratings);
     }
 }

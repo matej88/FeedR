@@ -3,7 +3,9 @@ package se.chalmers.exjobb.feedr.fragments;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +18,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import se.chalmers.exjobb.feedr.R;
+import se.chalmers.exjobb.feedr.adapters.CourseTabViewPagerAdapter;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
 
@@ -35,14 +40,22 @@ public class CourseOverviewFragment extends Fragment {
     private static final String ARG_COURSEKEY = "courseKey";
     private static final String ARG_RATINGS = "ratings";
 
-    // private static final String FEEDBACKS = "feedbacks";
+    //private static final String FEEDBACKS = "feedbacks";
 
     private Course mCourse;
     private String courseKey;
-    private ArrayList<Double> ratings;
+    private ArrayList<Feedback> mRatings;
 
-    //private DatabaseReference mDataRef;
-   // private DatabaseReference mRatingsRef;
+    private double mCurrentRating;
+
+    // Stores two fragments on the main page
+    private ViewPager mViewPagerSingleCourse;
+
+    // Enables to swipe through the fragments on main page
+    private TabLayout mTabLayoutSingleCourse;
+
+  //  private DatabaseReference mDataRef;
+  // private DatabaseReference mRatingsRef;
 
 
 
@@ -59,12 +72,13 @@ public class CourseOverviewFragment extends Fragment {
      * @return A new instance of fragment CourseOverviewFragment.
      */
 
-    public static CourseOverviewFragment newInstance(Course course, String courseKey, ArrayList<Double> theratings) {
+    public static CourseOverviewFragment newInstance(Course course, String courseKey, ArrayList<Feedback> ratings) {
         CourseOverviewFragment fragment = new CourseOverviewFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_COURSE, course);
         args.putString(ARG_COURSEKEY, courseKey);
-        args.putParcelableArrayList(ARG_RATINGS, theratings);
+
+        args.putParcelableArrayList(ARG_RATINGS, ratings);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,8 +89,12 @@ public class CourseOverviewFragment extends Fragment {
         if (getArguments() != null) {
             mCourse = getArguments().getParcelable(ARG_COURSE);
             courseKey = getArguments().getString(ARG_COURSEKEY);
+            mRatings = getArguments().getParcelableArrayList(ARG_RATINGS);
+
 
         }
+
+
 
 
     }
@@ -86,43 +104,74 @@ public class CourseOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
-        //final List<Double> ratings = new ArrayList<>();
 
-        //mDataRef = FirebaseDatabase.getInstance().getReference();
-        //mRatingsRef = mDataRef.child(FEEDBACKS);
-       // ratings.clear();
-//        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-//
-//                while(children.hasNext()){
-//                    DataSnapshot item = children.next();
-//                    Feedback feed;
-//                    double rating;
-//                    feed = item.getValue(Feedback.class);
-//                    rating = feed.getRating();
-//                    ratings.add(rating);
-//
-//                }
-//
-//                Toast.makeText(getActivity(), String.valueOf(ratings.size()), Toast.LENGTH_LONG);
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
-
+        TextView courseRating = (TextView) view.findViewById(R.id.course_overview_rating);
+        calculateRating(mRatings);
         courseName.setText(mCourse.getName());
         courseCode.setText(courseKey);
+        setupTabs(view);
+        courseRating.setText(Double.toString(mCurrentRating));
+
 
         return view;
+    }
+
+    public void setupTabs(View view){
+        mViewPagerSingleCourse = (ViewPager) view.findViewById(R.id.viewpager_single_course);
+        //  if there are fragments added to ViewPager then set it up
+        if (mViewPagerSingleCourse != null){
+            setupViewPager(mViewPagerSingleCourse);
+        }
+
+
+        mTabLayoutSingleCourse = (TabLayout) view.findViewById(R.id.tabLayout_single_course);
+        mTabLayoutSingleCourse.setupWithViewPager(mViewPagerSingleCourse);
+
+        // What happens if user swipes through the fragments
+        mTabLayoutSingleCourse.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // show the page that is swiped to
+                mViewPagerSingleCourse.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    // Populate the adapter with fragments
+    private void setupViewPager(ViewPager mViewPager){
+        CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter.addFrag(new SurveyTabFragment(), "Surveys");
+
+
+        mViewPager.setAdapter(adapter);
+    }
+    public void calculateRating(ArrayList<Feedback> ratings){
+
+            int nrOfRatings = ratings.size();
+            int combRatings = 0;
+            for(int i = 0; i < nrOfRatings ; i++){
+                    combRatings += ratings.get(i).getRating();
+            }
+
+            if(nrOfRatings != 0) {
+                mCurrentRating = combRatings / nrOfRatings;
+            }
+            else{
+                mCurrentRating = 1337;
+            }
+
     }
 
 }

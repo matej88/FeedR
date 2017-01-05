@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         CourseListFragment.OnCourseSelectedListener{
     private DatabaseReference mDataRef;
+    private double[] dRatings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,46 +134,40 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCourseSelected(Course selectedCourse,String courseKey) {
-        ArrayList<Double>ratings = getTheRatings(courseKey);
+    public void onCourseSelected(Course selectedCourse,String courseKey, ArrayList<Feedback> ratings) {
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey,ratings);
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
     }
 
-    public ArrayList<Double> getTheRatings(String courseKey){
 
-        //MAKE IT double[]
-        final ArrayList<Double> ratings = new ArrayList<Double>();
-        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
-        ratings.clear();
-        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-
-                while(children.hasNext()){
-                    DataSnapshot item = children.next();
-                    Feedback feed;
-                    double rating;
-                    feed = item.getValue(Feedback.class);
-                    rating = feed.getRating();
-                    ratings.add(rating);
-
-                }
-
-
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        return ratings;
-    }
+//    public ArrayList<Feedback> getTheRatings(String courseKey){
+//        final ArrayList<Feedback> ratings = new ArrayList<Feedback>();
+//        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
+//        ratings.clear();
+//        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
+//
+//                while(children.hasNext()){
+//                    DataSnapshot item = children.next();
+//                    Feedback feed;
+//                    feed = item.getValue(Feedback.class);
+//                    ratings.add(feed);
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        return ratings;
+//    }
 }

@@ -1,10 +1,13 @@
 package se.chalmers.exjobb.feedr.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by matej on 2017-01-04.
  */
 
-public class Feedback {
+public class Feedback implements Parcelable {
 
     private String username;
     private String courseKey;
@@ -20,6 +23,25 @@ public class Feedback {
         this.feedback = feedback;
         this.rating = rating;
     }
+
+    protected Feedback(Parcel in) {
+        username = in.readString();
+        courseKey = in.readString();
+        feedback = in.readString();
+        rating = in.readDouble();
+    }
+
+    public static final Creator<Feedback> CREATOR = new Creator<Feedback>() {
+        @Override
+        public Feedback createFromParcel(Parcel in) {
+            return new Feedback(in);
+        }
+
+        @Override
+        public Feedback[] newArray(int size) {
+            return new Feedback[size];
+        }
+    };
 
     public String getUsername() {
         return username;
@@ -51,5 +73,18 @@ public class Feedback {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(username);
+        parcel.writeString(courseKey);
+        parcel.writeString(feedback);
+        parcel.writeDouble(rating);
     }
 }
