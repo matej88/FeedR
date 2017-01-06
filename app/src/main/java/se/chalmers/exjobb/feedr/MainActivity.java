@@ -146,7 +146,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSurveyClicked(Uri uri) {
+    public void onSurveyClicked(String surveyKey) {
+
+        Toast.makeText(this, surveyKey, Toast.LENGTH_LONG).show();
 
     }
 

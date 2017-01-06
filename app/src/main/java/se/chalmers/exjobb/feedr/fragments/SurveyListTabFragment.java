@@ -100,12 +100,19 @@ public class SurveyListTabFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(SurveyViewHolder viewHolder, Survey model, int position) {
 
-                            final String surveyN = model.getSurveyName();
+                        final String surveyKey = this.getRef(position).getKey();
+                        final String surveyN = model.getSurveyName();
                             final String surveyC = model.getRefCode();
 
                                 viewHolder.surveyName.setText(surveyN);
                                 viewHolder.surveyCode.setText(surveyC);
 
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mListener.onSurveyClicked(surveyKey);
+                            }
+                        });
 
 
                     }
@@ -126,9 +133,9 @@ public class SurveyListTabFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(String surveyKey) {
         if (mListener != null) {
-            mListener.onSurveyClicked(uri);
+            mListener.onSurveyClicked(surveyKey);
         }
     }
 
@@ -160,7 +167,7 @@ public class SurveyListTabFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSurveyClickListener {
-        void onSurveyClicked(Uri uri);
+        void onSurveyClicked(String surveyKey);
     }
 
     public static class SurveyViewHolder extends RecyclerView.ViewHolder {
