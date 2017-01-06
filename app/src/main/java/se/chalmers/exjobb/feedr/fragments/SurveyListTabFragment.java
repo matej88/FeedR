@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -93,16 +94,17 @@ public class SurveyListTabFragment extends Fragment {
                         Survey.class,
                         R.layout.row_course,
                         SurveyViewHolder.class,
-                        mSurveysRef
+                        mSurveysRef.orderByChild("refCode").equalTo(mCourseKey)
                 ) {
 
                     @Override
                     protected void populateViewHolder(SurveyViewHolder viewHolder, Survey model, int position) {
 
-                        final String surveyN = model.getSurveyName();
-                        final String surveyK = model.getRefCode();
-                        viewHolder.surveyName.setText(surveyN);
-                       // viewHolder.surveyKey.setText(surveyK);
+                            final String surveyN = model.getSurveyName();
+                            final String surveyC = model.getRefCode();
+
+                                viewHolder.surveyName.setText(surveyN);
+                                viewHolder.surveyCode.setText(surveyC);
 
 
 
@@ -164,13 +166,15 @@ public class SurveyListTabFragment extends Fragment {
     public static class SurveyViewHolder extends RecyclerView.ViewHolder {
 
         TextView surveyName;
-        TextView surveyKey;
+        TextView surveyCode;
+
 
         public SurveyViewHolder(View itemView) {
             super(itemView);
 
             surveyName = (TextView) itemView.findViewById(R.id.list_course_name);
-            //surveyKey = (TextView) itemView.findViewById(R.id.list_course_code);
+            surveyCode = (TextView) itemView.findViewById(R.id.list_course_code);
+
 
         }
 

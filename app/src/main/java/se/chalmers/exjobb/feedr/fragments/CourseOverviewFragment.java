@@ -185,7 +185,7 @@ public class CourseOverviewFragment extends Fragment {
     // Populate the adapter with fragments
     private void setupViewPager(ViewPager mViewPager){
         CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getActivity().getSupportFragmentManager());
-        Fragment fragment = SurveyListTabFragment.newInstance(courseKey);
+        Fragment fragment = SurveyListTabFragment.newInstance(mCourse.getCode());
         adapter.addFrag(fragment, "Surveys");
 
 
