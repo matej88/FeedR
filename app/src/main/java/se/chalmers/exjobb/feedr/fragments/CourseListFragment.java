@@ -2,6 +2,7 @@ package se.chalmers.exjobb.feedr.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +52,18 @@ public class CourseListFragment extends Fragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //          .setAction("Action", null).show();
+
+
+
+            }
+        });
 
         return view;
     }

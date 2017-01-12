@@ -46,17 +46,7 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              //  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-              //          .setAction("Action", null).show();
 
-
-
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -153,31 +143,4 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-//    public ArrayList<Feedback> getTheRatings(String courseKey){
-//        final ArrayList<Feedback> ratings = new ArrayList<Feedback>();
-//        DatabaseReference mRatingsRef = mDataRef.child("feedbacks");
-//        ratings.clear();
-//        mRatingsRef.orderByChild(courseKey).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-//
-//                while(children.hasNext()){
-//                    DataSnapshot item = children.next();
-//                    Feedback feed;
-//                    feed = item.getValue(Feedback.class);
-//                    ratings.add(feed);
-//
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        return ratings;
-//    }
 }
