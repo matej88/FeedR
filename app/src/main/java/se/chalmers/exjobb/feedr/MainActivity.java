@@ -142,5 +142,9 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
+    @Override
+    public void onAddCourse(Course newCourse) {
+            DatabaseReference mCoursesRef = mDataRef.child("courses");
+        mCoursesRef.push().setValue(newCourse);
+    }
 }

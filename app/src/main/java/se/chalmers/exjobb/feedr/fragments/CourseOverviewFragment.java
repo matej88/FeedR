@@ -31,7 +31,7 @@ import se.chalmers.exjobb.feedr.models.Feedback;
  */
 public class CourseOverviewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_COURSE = "course";
+    private static final String ARG_COURSE = "selectedCourse";
     private static final String ARG_COURSEKEY = "courseKey";
 
     private static final String FEEDBACKS = "feedbacks";
@@ -88,6 +88,42 @@ public class CourseOverviewFragment extends Fragment {
             Log.d("CourseFragment", "onCreate");
 
 
+//
+//        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
+//
+//        mFeedRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("onDataChange", "inside the listener");
+//
+//                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+//
+//                for(DataSnapshot child : children){
+//                    Feedback feed = child.getValue(Feedback.class);
+//                    feeds.add(feed);
+//                }
+//
+//                Log.d("onDataChange", "size of feeds array" + feeds.size());
+//
+//                mCurrentRating = getRating(feeds);
+//                courseRating.setText(Double.toString(mCurrentRating));
+//                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.d("onCancelled", "inside onCanceled");
+//            }
+//        });
+
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
         DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
@@ -116,9 +152,6 @@ public class CourseOverviewFragment extends Fragment {
                 Log.d("onCancelled", "inside onCanceled");
             }
         });
-
-
-
     }
 
     @Override

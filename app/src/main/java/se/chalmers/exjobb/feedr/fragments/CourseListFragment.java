@@ -1,15 +1,23 @@
 package se.chalmers.exjobb.feedr.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,10 +65,10 @@ public class CourseListFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //          .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                  .setAction("Action", null).show();
 
-
+                showAddCourseDialog(null);
 
             }
         });
@@ -116,7 +124,68 @@ public class CourseListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mClickListener = null;
+        mCoursesRef.onDisconnect();
 
+    }
+
+
+
+    @SuppressLint("InflateParams")
+    public void showAddCourseDialog(final Course course){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_course, null);
+
+        final EditText courseNameEditText = (EditText) view.findViewById(R.id.dialog_add_course_name);
+        final EditText courseCodeEditText = (EditText) view.findViewById(R.id.dialog_add_course_code);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String courseName = courseNameEditText.getText().toString();
+                        String courseCode = courseCodeEditText.getText().toString();
+                        Course c = new Course(courseName,courseCode,"Uno Holmer");
+
+                        mClickListener.onAddCourse(c);
+                        Toast.makeText(getActivity(), "Created Course", Toast.LENGTH_LONG).show();
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+
+//
+//        DialogFragment df = new DialogFragment() {
+//            @NonNull
+//            @Override
+//            public Dialog onCreateDialog(Bundle savedInstanceState) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle("Add Course");
+//
+//                final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_course, null);
+//                builder.setView(view);
+//                final EditText courseNameEditText = (EditText) view.findViewById(R.id.dialog_add_course_name);
+//                final EditText courseCodeEditText = (EditText) view.findViewById(R.id.dialog_add_course_code);
+//
+//                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String courseName = courseNameEditText.getText().toString();
+//                        String courseCode = courseCodeEditText.getText().toString();
+//                        Course c = new Course(courseName,courseCode,"Uno Holmer");
+//
+//                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                              .setAction("Action", null).show();
+//                    }
+//                });
+//                builder.setNegativeButton(android.R.string.cancel, null);
+//
+//                return builder.create();
+//            }
+//        };
+//        df.show(this.getFragmentManager(), "Add course");
     }
 
     public static class CoursesViewHolder extends RecyclerView.ViewHolder {
@@ -139,5 +208,6 @@ public class CourseListFragment extends Fragment {
 
     public interface OnCourseSelectedListener {
         void onCourseSelected(Course selectedCourse, String courseKey);
+       void onAddCourse(Course newCourse);
     }
 }
