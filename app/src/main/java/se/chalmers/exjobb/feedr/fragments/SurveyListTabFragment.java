@@ -38,12 +38,6 @@ public class SurveyListTabFragment extends Fragment {
     private OnSurveyClickListener mListener;
 
 
-
-    private DatabaseReference mDataRef;
-    private DatabaseReference mSurveysRef;
-    private RecyclerView mSurveyTabRecyclerView;
-
-
     public SurveyListTabFragment() {
         // Required empty public constructor
     }
@@ -86,9 +80,9 @@ public class SurveyListTabFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String surveyKey) {
+    public void onButtonPressed(Survey survey) {
         if (mListener != null) {
-            mListener.onSurveyClicked(surveyKey);
+            mListener.onSurveyClicked(survey);
         }
     }
 
@@ -120,7 +114,7 @@ public class SurveyListTabFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSurveyClickListener {
-        void onSurveyClicked(String surveyKey);
+        void onSurveyClicked(Survey survey);
     }
 
 

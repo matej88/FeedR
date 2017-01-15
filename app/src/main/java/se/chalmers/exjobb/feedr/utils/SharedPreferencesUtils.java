@@ -22,4 +22,16 @@ public class SharedPreferencesUtils {
         editor.commit();
     }
 
+    public static String getCurrentSurveyKey (Context context){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        return prefs.getString(Constants.SURVEY_KEY, "");
+    }
+
+    public static void setCurrentSurveyKey(Context context, String surveyKey){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.SURVEY_KEY, surveyKey);
+        editor.commit();
+    }
+
 }

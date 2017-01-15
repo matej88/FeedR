@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
 import se.chalmers.exjobb.feedr.models.Survey;
+import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 /**
  * Created by matej on 2017-01-15.
@@ -126,7 +127,9 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(view.getContext(),"Clicked on survey",Toast.LENGTH_LONG);
+            SharedPreferencesUtils.setCurrentCourseKey(mSurveyListTabFragment.getContext(), mSurveys.get(getAdapterPosition()).getKey());
+            Survey survey = mSurveys.get(getAdapterPosition());
+            mSurveySelectedListener.onSurveyClicked(survey);
         }
     }
 }

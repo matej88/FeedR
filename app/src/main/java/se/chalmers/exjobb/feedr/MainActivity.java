@@ -32,6 +32,7 @@ import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
+import se.chalmers.exjobb.feedr.models.Survey;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -138,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSurveyClicked(String surveyKey) {
+    public void onSurveyClicked(Survey survey) {
 
-        Toast.makeText(this, surveyKey, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Clicked on " + survey.getKey(), Toast.LENGTH_SHORT).show();
 
     }
 
