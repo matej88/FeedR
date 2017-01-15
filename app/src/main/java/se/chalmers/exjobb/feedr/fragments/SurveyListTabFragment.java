@@ -3,6 +3,8 @@ package se.chalmers.exjobb.feedr.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -71,6 +73,20 @@ public class SurveyListTabFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_survey_list_tab, container, false);
 
         Log.d("onCreateView", mCurrentCourseKey);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addSurvey);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                  .setAction("Action", null).show();
+                mListener.onAddSurveyClicked(mCurrentCourseKey);
+
+            }
+        });
+
+        fab.setVisibility(View.VISIBLE);
+
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.survey_tab_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(recyclerView);
@@ -115,6 +131,7 @@ public class SurveyListTabFragment extends Fragment {
      */
     public interface OnSurveyClickListener {
         void onSurveyClicked(Survey survey);
+        void onAddSurveyClicked(String courseKey);
     }
 
 

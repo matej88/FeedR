@@ -30,7 +30,9 @@ public static final String COURSE_KEY = "refCode";
         this.surveyName = surveyName;
     }
 
+
     protected Survey(Parcel in) {
+        key = in.readString();
         refCode = in.readString();
         surveyName = in.readString();
     }
@@ -87,6 +89,7 @@ public static final String COURSE_KEY = "refCode";
         this.key = key;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -94,6 +97,7 @@ public static final String COURSE_KEY = "refCode";
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(key);
         parcel.writeString(refCode);
         parcel.writeString(surveyName);
     }

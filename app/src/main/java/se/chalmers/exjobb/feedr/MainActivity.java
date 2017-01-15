@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,20 +25,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import se.chalmers.exjobb.feedr.fragments.AddSurveyFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
+import se.chalmers.exjobb.feedr.models.Question;
 import se.chalmers.exjobb.feedr.models.Survey;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         CourseListFragment.OnCourseSelectedListener,
-        SurveyListTabFragment.OnSurveyClickListener{
+        SurveyListTabFragment.OnSurveyClickListener,
+        AddSurveyFragment.OnSurveyAddListener
+        {
     private DatabaseReference mDataRef;
     private double[] dRatings;
     @Override
@@ -146,8 +153,39 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onAddSurveyClicked(String courseKey) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        AddSurveyFragment fragment = AddSurveyFragment.newInstance(courseKey);
+        ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("course_overview");
+        ft.commit();
+    }
+
+    @Override
     public void onAddCourse(Course newCourse) {
             DatabaseReference mCoursesRef = mDataRef.child("courses");
         mCoursesRef.push().setValue(newCourse);
     }
-}
+
+    @Override
+    public void onSurveyAdded(String courseKey, ArrayList<Question> questions) {
+            Survey survey = new Survey(courseKey, "New Survey");
+
+            DatabaseReference mSurveysRef = mDataRef.child("surveys");
+            String key = mSurveysRef.push().getKey();
+            mSurveysRef.child(key).setValue(survey);
+
+             Map<String,Question> map = new HashMap<String, Question>();
+
+            for ( int i = 0; i < questions.size(); i++){
+                String temp = mSurveysRef.child(key).child("questions").push().getKey();
+                map.put(temp,questions.get(i));
+            }
+
+             mSurveysRef.child(key).child("questions").setValue(map);
+
+
+
+    }
+
+        }

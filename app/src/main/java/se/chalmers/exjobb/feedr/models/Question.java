@@ -17,6 +17,10 @@ public class Question {
         this.answerRef = answerRef;
     }
 
+    public Question(String question){
+        this.question = question;
+    }
+
     public String getQuestion() {
         return question;
     }
