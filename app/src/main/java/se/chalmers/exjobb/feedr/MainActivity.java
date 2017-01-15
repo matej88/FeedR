@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements
         ft.commit();
 
         mDataRef = FirebaseDatabase.getInstance().getReference();
+        mDataRef.keepSynced(true);
     }
 
     @Override
@@ -127,11 +128,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCourseSelected(Course selectedCourse,String courseKey) {
+    public void onCourseSelected(Course selectedCourse) {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse,courseKey);
+        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse);
         ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("course_list");
         ft.commit();
     }
 

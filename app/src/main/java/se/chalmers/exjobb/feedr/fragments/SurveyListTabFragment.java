@@ -11,13 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 import se.chalmers.exjobb.feedr.R;
+import se.chalmers.exjobb.feedr.adapters.SurveyAdapter;
 import se.chalmers.exjobb.feedr.models.Survey;
 
 /**
@@ -31,12 +30,11 @@ import se.chalmers.exjobb.feedr.models.Survey;
 public class SurveyListTabFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_COURSEKEY = "course_key";
+    private static final String ARG_COURSEKEY = "current_course_key";
 
 
-    private String mCourseKey;
-
-
+    private String mCurrentCourseKey;
+    private SurveyAdapter mAdapter;
     private OnSurveyClickListener mListener;
 
 
@@ -50,20 +48,11 @@ public class SurveyListTabFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     *
-     * @return A new instance of fragment SurveyListTabFragment.
-     */
 
-    public static SurveyListTabFragment newInstance(String course_key) {
+    public static SurveyListTabFragment newInstance(String courseKey) {
         SurveyListTabFragment fragment = new SurveyListTabFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_COURSEKEY, course_key);
-
+        args.putString(ARG_COURSEKEY, courseKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,64 +61,28 @@ public class SurveyListTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mCourseKey = getArguments().getString(ARG_COURSEKEY);
+            mCurrentCourseKey = getArguments().getString(ARG_COURSEKEY);
 
         }
-        Log.d("onCreate", "inside ");
-        mDataRef = FirebaseDatabase.getInstance().getReference();
-        mSurveysRef = mDataRef.child("surveys");
 
-
-
+        Log.d("onCreate", mCurrentCourseKey);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-
-
-        FirebaseRecyclerAdapter<Survey, SurveyViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Survey, SurveyViewHolder>(
-                        Survey.class,
-                        R.layout.row_course,
-                        SurveyViewHolder.class,
-                        mSurveysRef.orderByChild("refCode").equalTo(mCourseKey)
-                ) {
-
-                    @Override
-                    protected void populateViewHolder(SurveyViewHolder viewHolder, Survey model, int position) {
-
-                        final String surveyKey = this.getRef(position).getKey();
-                        final String surveyN = model.getSurveyName();
-                            final String surveyC = model.getRefCode();
-
-                                viewHolder.surveyName.setText(surveyN);
-                                viewHolder.surveyCode.setText(surveyC);
-
-                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mListener.onSurveyClicked(surveyKey);
-                            }
-                        });
-
-
-                    }
-                };
-
-        mSurveyTabRecyclerView.setAdapter(adapter);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_survey_list_tab, container, false);
-        mSurveyTabRecyclerView = (RecyclerView) view.findViewById(R.id.survey_tab_recyclerView);
-        mSurveyTabRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        return view;
+
+        Log.d("onCreateView", mCurrentCourseKey);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.survey_tab_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        registerForContextMenu(recyclerView);
+        mAdapter = new SurveyAdapter(this, mCurrentCourseKey, mListener);
+        recyclerView.setAdapter(mAdapter);
+          return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -170,20 +123,5 @@ public class SurveyListTabFragment extends Fragment {
         void onSurveyClicked(String surveyKey);
     }
 
-    public static class SurveyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView surveyName;
-        TextView surveyCode;
-
-
-        public SurveyViewHolder(View itemView) {
-            super(itemView);
-
-            surveyName = (TextView) itemView.findViewById(R.id.list_course_name);
-            surveyCode = (TextView) itemView.findViewById(R.id.list_course_code);
-
-
-        }
-
-    }
 }

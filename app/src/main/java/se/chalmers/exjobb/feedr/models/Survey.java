@@ -1,12 +1,21 @@
 package se.chalmers.exjobb.feedr.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Map;
 
 /**
  * Created by matej on 2017-01-05.
  */
 
-public class Survey {
+public class Survey implements Parcelable {
+public static final String COURSE_KEY = "refCode";
+
+    @JsonIgnore
+    private String key;
 
     private String refCode;
     private String surveyName;
@@ -20,6 +29,23 @@ public class Survey {
         this.refCode = refCode;
         this.surveyName = surveyName;
     }
+
+    protected Survey(Parcel in) {
+        refCode = in.readString();
+        surveyName = in.readString();
+    }
+
+    public static final Creator<Survey> CREATOR = new Creator<Survey>() {
+        @Override
+        public Survey createFromParcel(Parcel in) {
+            return new Survey(in);
+        }
+
+        @Override
+        public Survey[] newArray(int size) {
+            return new Survey[size];
+        }
+    };
 
     public String getRefCode() {
         return refCode;
@@ -51,5 +77,24 @@ public class Survey {
 
     public void setAnswers(Map<String, Answer> answers) {
         this.answers = answers;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(refCode);
+        parcel.writeString(surveyName);
     }
 }

@@ -3,7 +3,7 @@ package se.chalmers.exjobb.feedr.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by matej on 2017-01-03.
@@ -14,6 +14,10 @@ public class Course implements Parcelable {
     private String name;
     private String code;
     private String teacher;
+
+    @JsonIgnore
+    private String key;
+
 
     public Course() {
     }
@@ -65,6 +69,14 @@ public class Course implements Parcelable {
 
     public void setTeacher(String teacher) {
         this.teacher = teacher;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     @Override

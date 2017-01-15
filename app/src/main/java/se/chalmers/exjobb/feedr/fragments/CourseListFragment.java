@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import se.chalmers.exjobb.feedr.R;
+import se.chalmers.exjobb.feedr.adapters.CourseAdapter;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
 
@@ -39,9 +40,9 @@ import se.chalmers.exjobb.feedr.models.Feedback;
 public class CourseListFragment extends Fragment {
 
     public static final String COURSES = "courses";
+
     private OnCourseSelectedListener mClickListener;
-    private DatabaseReference mDataRef;
-    private DatabaseReference mCoursesRef;
+    private CourseAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
     public CourseListFragment() {
@@ -52,13 +53,13 @@ public class CourseListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Context context = getContext();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_courses_list, container, false);
 
-        mDataRef = FirebaseDatabase.getInstance().getReference();
-        mCoursesRef = mDataRef.child(COURSES);
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
+                mRecyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -73,41 +74,17 @@ public class CourseListFragment extends Fragment {
             }
         });
 
+        fab.setVisibility(View.VISIBLE);
+
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        registerForContextMenu(recyclerView);
+        mAdapter = new CourseAdapter(this, mClickListener);
+        recyclerView.setAdapter(mAdapter);
+
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
-
-        FirebaseRecyclerAdapter<Course, CoursesViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Course, CoursesViewHolder>(
-                        Course.class,
-                        R.layout.row_course,
-                        CoursesViewHolder.class,
-                        mCoursesRef
-                ) {
-                    @Override
-                    protected void populateViewHolder(CoursesViewHolder viewHolder, Course model, int position) {
-
-                        final String courseKey = this.getRef(position).getKey();
-                        final Course selC = model;
-                        viewHolder.courseNameTextView.setText(model.getName());
-                        viewHolder.courseCodeTextView.setText(model.getCode());
-
-                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mClickListener.onCourseSelected(selC, courseKey);
-                                }
-                        });
-                    }
-                };
-
-        mRecyclerView.setAdapter(adapter);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -124,7 +101,7 @@ public class CourseListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mClickListener = null;
-        mCoursesRef.onDisconnect();
+
 
     }
 
@@ -156,58 +133,12 @@ public class CourseListFragment extends Fragment {
         dialog.show();
 
 
-//
-//        DialogFragment df = new DialogFragment() {
-//            @NonNull
-//            @Override
-//            public Dialog onCreateDialog(Bundle savedInstanceState) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                builder.setTitle("Add Course");
-//
-//                final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_course, null);
-//                builder.setView(view);
-//                final EditText courseNameEditText = (EditText) view.findViewById(R.id.dialog_add_course_name);
-//                final EditText courseCodeEditText = (EditText) view.findViewById(R.id.dialog_add_course_code);
-//
-//                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String courseName = courseNameEditText.getText().toString();
-//                        String courseCode = courseCodeEditText.getText().toString();
-//                        Course c = new Course(courseName,courseCode,"Uno Holmer");
-//
-//                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                              .setAction("Action", null).show();
-//                    }
-//                });
-//                builder.setNegativeButton(android.R.string.cancel, null);
-//
-//                return builder.create();
-//            }
-//        };
-//        df.show(this.getFragmentManager(), "Add course");
     }
 
-    public static class CoursesViewHolder extends RecyclerView.ViewHolder {
-
-        TextView courseNameTextView;
-        TextView courseCodeTextView;
-
-        public CoursesViewHolder(View itemView) {
-            super(itemView);
-
-            courseNameTextView = (TextView) itemView.findViewById(R.id.list_course_name);
-            courseCodeTextView = (TextView) itemView.findViewById(R.id.list_course_code);
-        }
-
-
-
-
-    }
 
 
     public interface OnCourseSelectedListener {
-        void onCourseSelected(Course selectedCourse, String courseKey);
+        void onCourseSelected(Course selectedCourse);
        void onAddCourse(Course newCourse);
     }
 }

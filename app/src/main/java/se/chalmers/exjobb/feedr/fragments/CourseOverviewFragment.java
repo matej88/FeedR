@@ -32,7 +32,7 @@ import se.chalmers.exjobb.feedr.models.Feedback;
 public class CourseOverviewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_COURSE = "selectedCourse";
-    private static final String ARG_COURSEKEY = "courseKey";
+
 
     private static final String FEEDBACKS = "feedbacks";
 
@@ -68,11 +68,11 @@ public class CourseOverviewFragment extends Fragment {
      * @return A new instance of fragment CourseOverviewFragment.
      */
 
-    public static CourseOverviewFragment newInstance(Course course, String courseKey) {
+    public static CourseOverviewFragment newInstance(Course course) {
         CourseOverviewFragment fragment = new CourseOverviewFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_COURSE, course);
-        args.putString(ARG_COURSEKEY, courseKey);
+
 
         fragment.setArguments(args);
         return fragment;
@@ -83,9 +83,11 @@ public class CourseOverviewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mCourse = getArguments().getParcelable(ARG_COURSE);
-            courseKey = getArguments().getString(ARG_COURSEKEY);
+
         }
             Log.d("CourseFragment", "onCreate");
+
+
 
 
 //
@@ -125,33 +127,7 @@ public class CourseOverviewFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
 
-        mFeedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("onDataChange", "inside the listener");
-
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-
-                for(DataSnapshot child : children){
-                    Feedback feed = child.getValue(Feedback.class);
-                    feeds.add(feed);
-                }
-
-                Log.d("onDataChange", "size of feeds array" + feeds.size());
-
-                mCurrentRating = getRating(feeds);
-                courseRating.setText(Double.toString(mCurrentRating));
-                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("onCancelled", "inside onCanceled");
-            }
-        });
     }
 
     @Override
@@ -162,10 +138,38 @@ public class CourseOverviewFragment extends Fragment {
         Log.d("onCreateView", "inside onCreateView");
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
+//        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
+//
+//        mFeedRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("onDataChange", "inside the listener");
+//
+//                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+//
+//                for(DataSnapshot child : children){
+//                    Feedback feed = child.getValue(Feedback.class);
+//                    feeds.add(feed);
+//                }
+//
+//                Log.d("onDataChange", "size of feeds array" + feeds.size());
+//
+//                mCurrentRating = getRating(feeds);
+//                courseRating.setText(Double.toString(mCurrentRating));
+//                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.d("onCancelled", "inside onCanceled");
+//            }
+//        });
         courseRating = (TextView) view.findViewById(R.id.course_overview_rating);
 
         courseName.setText(mCourse.getName());
         courseCode.setText(mCourse.getCode());
+        courseRating.setText(mCourse.getKey());
         setupTabs(view);
 
         return view;
@@ -217,10 +221,13 @@ public class CourseOverviewFragment extends Fragment {
 
     // Populate the adapter with fragments
     private void setupViewPager(ViewPager mViewPager){
-        CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getActivity().getSupportFragmentManager());
+
+        // call getChildFragmentManager when a fragment is inside another fragment
+        CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getChildFragmentManager());
         Fragment fragment = SurveyListTabFragment.newInstance(mCourse.getCode());
         adapter.addFrag(fragment, "Surveys");
 
+        Log.d("setupViewPager", "inside ");
 
         mViewPager.setAdapter(adapter);
     }
