@@ -106,7 +106,7 @@ public class AddSurveyFragment extends Fragment {
                 Toast.makeText(getActivity(), "The number of questions is " + questions.size(), Toast.LENGTH_LONG).show();
 
                 mListener.onSurveyAdded(mCourseKey,questions);
-                onDestroy();
+                getFragmentManager().popBackStack();
             }
         });
         return view;

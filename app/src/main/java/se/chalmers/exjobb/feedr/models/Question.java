@@ -1,10 +1,18 @@
 package se.chalmers.exjobb.feedr.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by matej on 2017-01-06.
  */
 
-public class Question {
+public class Question implements Parcelable{
+
+    @JsonIgnore
+    private String key;
 
     private String question;
     private String answerRef;
@@ -21,6 +29,24 @@ public class Question {
         this.question = question;
     }
 
+    protected Question(Parcel in) {
+        key = in.readString();
+        question = in.readString();
+        answerRef = in.readString();
+    }
+
+    public static final Creator<Question> CREATOR = new Creator<Question>() {
+        @Override
+        public Question createFromParcel(Parcel in) {
+            return new Question(in);
+        }
+
+        @Override
+        public Question[] newArray(int size) {
+            return new Question[size];
+        }
+    };
+
     public String getQuestion() {
         return question;
     }
@@ -35,5 +61,29 @@ public class Question {
 
     public void setAnswerRef(String answerRef) {
         this.answerRef = answerRef;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public static Creator<Question> getCREATOR() {
+        return CREATOR;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(key);
+        parcel.writeString(question);
+        parcel.writeString(answerRef);
     }
 }

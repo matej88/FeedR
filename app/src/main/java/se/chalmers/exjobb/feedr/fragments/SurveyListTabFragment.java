@@ -1,10 +1,10 @@
 package se.chalmers.exjobb.feedr.fragments;
 
 import android.content.Context;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,9 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
 
 
 import se.chalmers.exjobb.feedr.R;
@@ -61,7 +59,7 @@ public class SurveyListTabFragment extends Fragment {
 
         }
 
-        Log.d("onCreate", mCurrentCourseKey);
+
     }
 
 
@@ -72,7 +70,7 @@ public class SurveyListTabFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_survey_list_tab, container, false);
 
-        Log.d("onCreateView", mCurrentCourseKey);
+
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addSurvey);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -95,10 +93,10 @@ public class SurveyListTabFragment extends Fragment {
           return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Survey survey) {
+
+    public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onSurveyClicked(survey);
+            mListener.onSurveyClicked();
         }
     }
 
@@ -130,7 +128,7 @@ public class SurveyListTabFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSurveyClickListener {
-        void onSurveyClicked(Survey survey);
+        void onSurveyClicked();
         void onAddSurveyClicked(String courseKey);
     }
 

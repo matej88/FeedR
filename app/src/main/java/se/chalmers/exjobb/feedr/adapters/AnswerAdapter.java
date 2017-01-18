@@ -17,37 +17,40 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 
 import se.chalmers.exjobb.feedr.R;
-import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
-import se.chalmers.exjobb.feedr.models.Survey;
+import se.chalmers.exjobb.feedr.fragments.AnswerListFragment;
+import se.chalmers.exjobb.feedr.models.Answer;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 /**
- * Created by matej on 2017-01-15.
+ * Created by matej on 2017-01-17.
  */
 
-public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder>{
+public class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.ViewHolder> {
+    private AnswerListFragment mAnswerListFragment;
 
-    private final SurveyListTabFragment.OnSurveyClickListener mSurveySelectedListener;
-    private String mCourseKey;
-    private ArrayList<Survey> mSurveys = new ArrayList<>();
-    private SurveyListTabFragment mSurveyListTabFragment;
-    private DatabaseReference mSurveysRef;
+    private ArrayList<Answer> mAnswers = new ArrayList<>();
+    private String mQuestionKey;
+    private DatabaseReference mAnswersRef;
     private DatabaseReference mDataRef;
 
-    public SurveyAdapter(SurveyListTabFragment surveyListTabFragment,
-                         String courseKey,
-                         SurveyListTabFragment.OnSurveyClickListener surveySelectedListener){
 
-        mSurveyListTabFragment = surveyListTabFragment;
-        mSurveySelectedListener = surveySelectedListener;
-        mCourseKey = courseKey;
 
+    public AnswerAdapter(AnswerListFragment answerListFragment, String questionKey) {
+        mAnswerListFragment = answerListFragment;
+        mQuestionKey = questionKey;
+
+        String surveyKey = SharedPreferencesUtils.getCurrentSurveyKey(answerListFragment.getContext());
         mDataRef = FirebaseDatabase.getInstance().getReference();
-        mSurveysRef = mDataRef.child("surveys");
-        Query surveysForCourseRef = mSurveysRef.orderByChild(Survey.COURSE_KEY).equalTo(courseKey);
-        surveysForCourseRef.addChildEventListener(new SurveysChildEventListener());
+        mAnswersRef = mDataRef.child("surveys").child(surveyKey).child("answers");
+
+        Query answersForQuestion = mAnswersRef.orderByChild("questionKey").equalTo(mQuestionKey);
+        answersForQuestion.addChildEventListener(new AnswerAdapter.AnswersChildEventListener());
+
+
 
     }
+
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -57,28 +60,34 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mSurveyNameTextView.setText(mSurveys.get(position).getSurveyName());
+
+
+                holder.mAnswerTextView.setText(mAnswers.get(position).getAnswer());
+
+
+
+
     }
 
     @Override
     public int getItemCount() {
-        return mSurveys.size();
+        return mAnswers.size();
     }
 
-    private class SurveysChildEventListener implements ChildEventListener{
+    public class AnswersChildEventListener implements ChildEventListener{
 
         private void add(DataSnapshot dataSnapshot){
-            Survey survey = dataSnapshot.getValue(Survey.class);
-            survey.setKey(dataSnapshot.getKey());
-            mSurveys.add(survey);
+            Answer answer = dataSnapshot.getValue(Answer.class);
+            answer.setKey(dataSnapshot.getKey());
+            mAnswers.add(answer);
 
         }
 
         private int remove(String key){
-            for (Survey s : mSurveys){
-                if(s.getKey().equals(key)){
-                    int foundPos = mSurveys.indexOf(s);
-                    mSurveys.remove(s);
+            for (Answer a : mAnswers){
+                if(a.getKey().equals(key)){
+                    int foundPos = mAnswers.indexOf(a);
+                    mAnswers.remove(a);
                     return foundPos;
                 }
             }
@@ -86,7 +95,7 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
         }
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                add(dataSnapshot);
+            add(dataSnapshot);
             notifyDataSetChanged();
         }
 
@@ -115,21 +124,16 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
 
         }
     }
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView mSurveyNameTextView;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView mAnswerTextView;
+        private String answer;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mSurveyNameTextView = (TextView) itemView.findViewById(R.id.list_course_name);
-            itemView.setOnClickListener(this);
-        }
 
-        @Override
-        public void onClick(View view) {
-            SharedPreferencesUtils.setCurrentSurveyKey(mSurveyListTabFragment.getContext(), mSurveys.get(getAdapterPosition()).getKey());
-            mSurveySelectedListener.onSurveyClicked();
-
+            mAnswerTextView = (TextView) itemView.findViewById(R.id.list_course_name);
         }
     }
 }

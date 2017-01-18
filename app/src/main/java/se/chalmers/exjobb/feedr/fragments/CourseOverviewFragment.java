@@ -85,41 +85,6 @@ public class CourseOverviewFragment extends Fragment {
             mCourse = getArguments().getParcelable(ARG_COURSE);
 
         }
-            Log.d("CourseFragment", "onCreate");
-
-
-
-
-//
-//        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
-//
-//        mFeedRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("onDataChange", "inside the listener");
-//
-//                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-//
-//                for(DataSnapshot child : children){
-//                    Feedback feed = child.getValue(Feedback.class);
-//                    feeds.add(feed);
-//                }
-//
-//                Log.d("onDataChange", "size of feeds array" + feeds.size());
-//
-//                mCurrentRating = getRating(feeds);
-//                courseRating.setText(Double.toString(mCurrentRating));
-//                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("onCancelled", "inside onCanceled");
-//            }
-//        });
-
-
 
     }
 
@@ -135,36 +100,10 @@ public class CourseOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
-        Log.d("onCreateView", "inside onCreateView");
+
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
-//        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference mFeedRef = mRef.child(FEEDBACKS);
-//
-//        mFeedRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("onDataChange", "inside the listener");
-//
-//                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-//
-//                for(DataSnapshot child : children){
-//                    Feedback feed = child.getValue(Feedback.class);
-//                    feeds.add(feed);
-//                }
-//
-//                Log.d("onDataChange", "size of feeds array" + feeds.size());
-//
-//                mCurrentRating = getRating(feeds);
-//                courseRating.setText(Double.toString(mCurrentRating));
-//                Log.d("insideView", "totalNrOfRatings " + mCurrentRating);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("onCancelled", "inside onCanceled");
-//            }
-//        });
+
         courseRating = (TextView) view.findViewById(R.id.course_overview_rating);
 
         courseName.setText(mCourse.getName());
@@ -226,8 +165,10 @@ public class CourseOverviewFragment extends Fragment {
         CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getChildFragmentManager());
         Fragment fragment = SurveyListTabFragment.newInstance(mCourse.getCode());
         adapter.addFrag(fragment, "Surveys");
+        Fragment fragment1 = FeedbackListTabFragment.newInstance(mCourse.getCode());
+        adapter.addFrag(fragment1, "Feedbacks");
 
-        Log.d("setupViewPager", "inside ");
+
 
         mViewPager.setAdapter(adapter);
     }

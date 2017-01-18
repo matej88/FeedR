@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -31,19 +32,24 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.exjobb.feedr.fragments.AddSurveyFragment;
+import se.chalmers.exjobb.feedr.fragments.AnswerListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
+import se.chalmers.exjobb.feedr.fragments.SurveyOverviewFragment;
+import se.chalmers.exjobb.feedr.models.Answer;
 import se.chalmers.exjobb.feedr.models.Course;
 import se.chalmers.exjobb.feedr.models.Feedback;
 import se.chalmers.exjobb.feedr.models.Question;
 import se.chalmers.exjobb.feedr.models.Survey;
+import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         CourseListFragment.OnCourseSelectedListener,
         SurveyListTabFragment.OnSurveyClickListener,
-        AddSurveyFragment.OnSurveyAddListener
+        AddSurveyFragment.OnSurveyAddListener,
+        SurveyOverviewFragment.OnSurveyQuestionClickedListener
         {
     private DatabaseReference mDataRef;
     private double[] dRatings;
@@ -146,9 +152,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSurveyClicked(Survey survey) {
+    public void onSurveyClicked() {
 
-        Toast.makeText(this, "Clicked on " + survey.getKey(), Toast.LENGTH_SHORT).show();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        SurveyOverviewFragment fragment = new SurveyOverviewFragment();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("survey_overview");
+        ft.commit();
 
     }
 
@@ -188,4 +199,18 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+            @Override
+            public void onQuestionClicked(String questionKey) {
+//
+//                DatabaseReference mAnswersRef = mDataRef.child("surveys").child(courseKey).child("answers");
+//                Query answersRef = mAnswersRef.orderByChild(Survey.COURSE_KEY).equalTo(courseKey);
+//                surveysForCourseRef.addChildEventListener(new SurveysChildEventListener());
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                AnswerListFragment fragment = AnswerListFragment.newInstance(questionKey);
+                ft.replace(R.id.fragment_container, fragment);
+                ft.addToBackStack("answer_list");
+                ft.commit();
+
+            }
         }
