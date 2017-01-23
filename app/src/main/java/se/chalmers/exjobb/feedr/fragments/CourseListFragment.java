@@ -59,7 +59,7 @@ public class CourseListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_courses_list, container, false);
 
-                mRecyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.course_list_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);

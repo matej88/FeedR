@@ -37,8 +37,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     private DatabaseReference mDataRef;
     private ArrayList<Course> mCourses = new ArrayList<>();
 
-    public CourseAdapter(CourseListFragment courseListFragment, CourseListFragment.OnCourseSelectedListener listener){
-        Log.d("TAG", "Inside CourseAdapter ");
+    public CourseAdapter(CourseListFragment courseListFragment,
+                         CourseListFragment.OnCourseSelectedListener listener){
+
 
         mCourseListFragment = courseListFragment;
         mCourseSelectedListener = listener;

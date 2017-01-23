@@ -4,12 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    android:background="#fff">
 
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+>
 
     <TextView
 
@@ -17,8 +20,11 @@
         android:layout_width="match_parent"
         android:text="Course Name"
         android:id="@+id/course_overview_name"
-        android:textSize="19dp"
-        android:paddingTop="10dp"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         />
 
 
@@ -28,6 +34,10 @@
         android:layout_width="match_parent"
         android:text="Course Code"
         android:id="@+id/course_overview_code"
+        android:paddingTop="4dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
         />
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,28 +72,32 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#DDD">
-
-
-        <ToggleButton
-            android:text="ToggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-
-            android:layout_alignParentEnd="true"
-
-            android:id="@+id/toggleButton"
-            android:gravity="center"/>
+        android:background="#ededed"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:text="Offline"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/toggleButton"
-            android:layout_alignParentStart="true"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="#222"
             android:id="@+id/textViewOnOff"
-            android:gravity="center_vertical"
+
+
             />
+        <ToggleButton
+            android:text="ToggleButton"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+
+            android:layout_alignParentEnd="true"
+
+            android:id="@+id/toggleButton"
+            android:layout_centerVertical="true"/>
+
     </RelativeLayout>
     <android.support.design.widget.TabLayout
 

@@ -37,9 +37,7 @@ public class CourseOverviewFragment extends Fragment {
     private static final String FEEDBACKS = "feedbacks";
 
     private Course mCourse;
-    private String courseKey;
 
-    private double mCurrentRating;
 
     private TextView courseRating;
 
@@ -101,6 +99,7 @@ public class CourseOverviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
 
+
         TextView courseName = (TextView) view.findViewById(R.id.course_overview_name);
         TextView courseCode = (TextView) view.findViewById(R.id.course_overview_code);
 
@@ -115,7 +114,7 @@ public class CourseOverviewFragment extends Fragment {
     }
 
     public double getRating(ArrayList<Feedback> feeds){
-        Log.d("getRating", "Inside getRatings and the size of the array is " + feeds.size());
+
 
         int totalNrOfRatings = feeds.size();
         int ratingsAdded = 0;
