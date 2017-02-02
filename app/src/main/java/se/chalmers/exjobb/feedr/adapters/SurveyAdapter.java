@@ -1,6 +1,7 @@
 package se.chalmers.exjobb.feedr.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,14 +52,27 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_course,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_survey_list,parent,false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mSurveyNameTextView.setText(mSurveys.get(position).getSurveyName());
-    }
+
+
+
+            holder.mSurveyNameTextView.setText(mSurveys.get(position).getSurveyName());
+
+            if( mSurveys.get(position).getAnswers() != null){
+                int a = mSurveys.get(position).getAnswers().size();
+                holder.mSurveyAnswersTextView.setText(Integer.toString(a));
+            } else {
+                holder.mSurveyAnswersTextView.setText("No answers yet");
+            }
+
+
+        }
+
 
     @Override
     public int getItemCount() {
@@ -118,10 +132,17 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView mSurveyNameTextView;
+        private TextView mSurveyAnswersTextView;
+        private TextView mNoSurveys;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mSurveyNameTextView = (TextView) itemView.findViewById(R.id.list_course_name);
+            mSurveyNameTextView = (TextView) itemView.findViewById(R.id.list_survey_name);
+            mSurveyAnswersTextView = (TextView) itemView.findViewById(R.id.list_survey_answers_nr);
+            mNoSurveys = (TextView) itemView.findViewById(R.id.list_survey_no_surveys);
+
+
             itemView.setOnClickListener(this);
         }
 

@@ -88,15 +88,27 @@
 
 
             />
-        <ToggleButton
-            android:text="ToggleButton"
-            android:layout_width="70dp"
-            android:layout_height="40dp"
 
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/textView3"
+            android:textColor="#042"/>
+        <Switch
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:id="@+id/course_switch"
+           />
 
-            android:id="@+id/toggleButton"
-            android:layout_centerVertical="true"/>
+
+
 
     </RelativeLayout>
     <android.support.design.widget.TabLayout

@@ -19,14 +19,6 @@ import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.adapters.SurveyAdapter;
 import se.chalmers.exjobb.feedr.models.Survey;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnSurveyClickListener} interface
- * to handle interaction events.
- * Use the {@link SurveyListTabFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SurveyListTabFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

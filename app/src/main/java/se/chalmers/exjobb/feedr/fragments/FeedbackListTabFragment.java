@@ -68,7 +68,7 @@ public class FeedbackListTabFragment extends Fragment {
         mDataRef = FirebaseDatabase.getInstance().getReference();
         mFeedbacksRef = mDataRef.child("feedbacks");
 
-         feedbacksForCurrentCourse = mFeedbacksRef.orderByChild("coursekey").equalTo(mCourseCode);
+         feedbacksForCurrentCourse = mFeedbacksRef.orderByKey().equalTo(mCourseCode);
 
 
 

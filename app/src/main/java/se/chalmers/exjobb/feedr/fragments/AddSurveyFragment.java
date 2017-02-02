@@ -66,7 +66,7 @@ public class AddSurveyFragment extends Fragment {
 
         mTextView = (TextView) view.findViewById(R.id.questionIn);
         mButton = (Button) view.findViewById(R.id.addQuestion);
-        mLayout = (LinearLayout)view.findViewById(R.id.container);
+        mLayout = (LinearLayout) view.findViewById(R.id.container);
         sendSurvey = (Button) view.findViewById(R.id.btn_add_survey);
 
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +88,7 @@ public class AddSurveyFragment extends Fragment {
                 btnRemove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ((LinearLayout)addQuestionView.getParent()).removeView(addQuestionView);
+                        ((LinearLayout) addQuestionView.getParent()).removeView(addQuestionView);
                         int pos = questions.indexOf(q);
                         questions.remove(pos);
                     }
@@ -105,23 +105,13 @@ public class AddSurveyFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "The number of questions is " + questions.size(), Toast.LENGTH_LONG).show();
 
-                mListener.onSurveyAdded(mCourseKey,questions);
+                mListener.onSurveyAdded(mCourseKey, questions);
                 getFragmentManager().popBackStack();
             }
         });
         return view;
     }
 
-
-
-
-
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(String courseKey) {
-//        if (mListener != null) {
-//            mListener.onSurveyAdded(mCourseKey);
-//        }
-//    }
 
     @Override
     public void onAttach(Context context) {

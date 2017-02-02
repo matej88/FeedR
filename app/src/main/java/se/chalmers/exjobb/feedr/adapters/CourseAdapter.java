@@ -36,17 +36,19 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     private DatabaseReference mCoursesRef;
     private DatabaseReference mDataRef;
     private ArrayList<Course> mCourses = new ArrayList<>();
+    private String mTeacherUid;
 
     public CourseAdapter(CourseListFragment courseListFragment,
-                         CourseListFragment.OnCourseSelectedListener listener){
+                         CourseListFragment.OnCourseSelectedListener listener,
+                         String teacherUid){
 
 
         mCourseListFragment = courseListFragment;
         mCourseSelectedListener = listener;
         mDataRef = FirebaseDatabase.getInstance().getReference();
         mCoursesRef = mDataRef.child("courses");
-
-        Query query = mCoursesRef.orderByChild("teacher").equalTo("Uno Holmer");
+        mTeacherUid = teacherUid;
+        Query query = mCoursesRef.orderByChild("teacherUid").equalTo(mTeacherUid);
         query.addChildEventListener(new CoursesChildEventListener());
 
     }

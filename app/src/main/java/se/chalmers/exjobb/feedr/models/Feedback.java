@@ -3,45 +3,29 @@ package se.chalmers.exjobb.feedr.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Map;
+
 /**
  * Created by matej on 2017-01-04.
  */
 
-public class Feedback implements Parcelable {
+public class Feedback  {
 
     private String username;
-    private String courseKey;
+    private long timestamp;
     private String feedback;
     private int rating;
 
     public Feedback(){
 
     }
-    public Feedback(String username, String courseKey, String feedback, int rating) {
+    public Feedback(String username,String feedback, int rating, long timestamp) {
         this.username = username;
-        this.courseKey = courseKey;
         this.feedback = feedback;
         this.rating = rating;
+        this.timestamp = timestamp;
     }
 
-    protected Feedback(Parcel in) {
-        username = in.readString();
-        courseKey = in.readString();
-        feedback = in.readString();
-        rating = in.readInt();
-    }
-
-    public static final Creator<Feedback> CREATOR = new Creator<Feedback>() {
-        @Override
-        public Feedback createFromParcel(Parcel in) {
-            return new Feedback(in);
-        }
-
-        @Override
-        public Feedback[] newArray(int size) {
-            return new Feedback[size];
-        }
-    };
 
     public String getUsername() {
         return username;
@@ -51,13 +35,6 @@ public class Feedback implements Parcelable {
         this.username = username;
     }
 
-    public String getCourseKey() {
-        return courseKey;
-    }
-
-    public void setCourseKey(String courseKey) {
-        this.courseKey = courseKey;
-    }
 
     public String getFeedback() {
         return feedback;
@@ -75,16 +52,11 @@ public class Feedback implements Parcelable {
         this.rating = rating;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(username);
-        parcel.writeString(courseKey);
-        parcel.writeString(feedback);
-        parcel.writeInt(rating);
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

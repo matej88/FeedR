@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="se.chalmers.exjobb.feedr.fragments.LiveSessionFragment">
+
+    <!-- <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#eee"
+        android:id="@+id/graph_container">
+
+    </FrameLayout>
+-->
+
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="250dip"
+        android:id="@+id/graph" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Feedbacks"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_below="@+id/graph"
+        android:id="@+id/feedbackTV"/>
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/session_feedback_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F8F9Fa"
+        android:layout_below="@+id/feedbackTV"/>
+
+    <Button
+        android:text="send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/graph"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/send" />
+
+</RelativeLayout>

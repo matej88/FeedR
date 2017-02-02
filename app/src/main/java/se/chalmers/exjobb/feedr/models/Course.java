@@ -14,6 +14,8 @@ public class Course implements Parcelable {
     private String name;
     private String code;
     private String teacher;
+    private String teacherUid;
+    private boolean isOnline;
 
     @JsonIgnore
     private String key;
@@ -22,10 +24,12 @@ public class Course implements Parcelable {
     public Course() {
     }
 
-    public Course(String name, String code, String teacher){
+    public Course(String name, String code, String teacher, String teacherUid){
             this.name = name;
             this.code = code;
             this.teacher = teacher;
+            this.teacherUid = teacherUid;
+            isOnline = false;
     }
 
 
@@ -69,6 +73,22 @@ public class Course implements Parcelable {
 
     public void setTeacher(String teacher) {
         this.teacher = teacher;
+    }
+
+    public String getTeacherUid() {
+        return teacherUid;
+    }
+
+    public void setTeacherUid(String teacherUid) {
+        this.teacherUid = teacherUid;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 
     public String getKey() {
