@@ -13,6 +13,7 @@ public class Constants {
     public static final String TEACHER_NAME = "TEACHER_NAME";
     public static final String TEACHER_UID = "TEACHER_UID";
     public static final String SESSION_KEY = "SESSION_KEY";
+    public static final String SURVEY_NAME = "SURVEY_NAME";
 
 
 }

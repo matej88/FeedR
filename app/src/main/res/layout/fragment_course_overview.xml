@@ -76,30 +76,31 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="8dp"
+        android:id="@+id/onoff_layout">
 
         <TextView
             android:text="Offline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:textColor="#222"
-            android:id="@+id/textViewOnOff"
+            android:textColor="#fff"
+            android:id="@+id/course_overview_status"
 
 
             />
 
         <TextView
-            android:text="TextView"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/textView3"
-            android:textColor="#042"/>
-        <Switch
 
+            android:layout_centerInParent="true"
+
+            android:id="@+id/course_overview_open_session"
+            android:textColor="#fff"/>
+        <android.support.v7.widget.SwitchCompat
+            app:theme="@style/Color1SwitchStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"

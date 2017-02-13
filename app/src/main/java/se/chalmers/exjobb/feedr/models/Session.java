@@ -1,20 +1,19 @@
 package se.chalmers.exjobb.feedr.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.ServerValue;
 
+import java.util.Collection;
 import java.util.Map;
-
-/**
- * Created by matej on 2017-01-31.
- */
 
 public class Session {
 
     private int sessionId;
     private boolean finished;
-    private Map<String,String> timestamp;
 
-    @JsonIgnore
+    @Exclude
     private String sessionKey;
 
 
@@ -22,10 +21,10 @@ public class Session {
     public Session() {
     }
 
-    public Session(int sessionId, boolean finished, Map<String,String>  timestamp) {
+    public Session(int sessionId, boolean finished) {
         this.sessionId = sessionId;
         this.finished = finished;
-        this.timestamp = timestamp;
+
     }
 
     public int getSessionId() {
@@ -52,11 +51,4 @@ public class Session {
         this.finished = finished;
     }
 
-    public Map<String, String> getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Map<String, String> timestamp) {
-        this.timestamp = timestamp;
-    }
 }

@@ -54,10 +54,11 @@ public class LoginFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-        mEmail = (EditText) view.findViewById(R.id.email_editText);
-        mPassword = (EditText) view.findViewById(R.id.password_editText);
-        mLoginButton = (Button) view.findViewById(R.id.signIn_button);
-        mRegisterButton = (Button) view.findViewById(R.id.register);
+
+        mEmail = (EditText) view.findViewById(R.id.login_email_field);
+        mPassword = (EditText) view.findViewById(R.id.login_password_field);
+        mLoginButton = (Button) view.findViewById(R.id.login_button);
+        mRegisterButton = (Button) view.findViewById(R.id.login_register_button);
 
 
         // if user pressed enter on keyboard on Email field, then go to the next
@@ -177,12 +178,6 @@ public class LoginFragment extends Fragment {
         mLoggingIn = false;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String email, String password) {
-        if (mListener != null) {
-            mListener.onLogin(email,password);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {

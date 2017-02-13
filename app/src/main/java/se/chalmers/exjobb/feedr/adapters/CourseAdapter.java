@@ -64,6 +64,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mCourseNameTextView.setText(mCourses.get(position).getName());
         holder.mCourseCodeTextView.setText(mCourses.get(position).getCode());
+
+        if(mCourses.get(position).getStudents() != null){
+            holder.mStudentsSubscribed.setText(mCourses.get(position).getStudents().size());
+        }else{
+            holder.mStudentsSubscribed.setText("0");
+        }
+
     }
 
     @Override
@@ -127,18 +134,21 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
         private TextView mCourseNameTextView;
         private TextView mCourseCodeTextView;
+        private TextView mStudentsSubscribed;
 
 
         public ViewHolder(View itemView){
             super(itemView);
-            mCourseNameTextView = (TextView) itemView.findViewById(R.id.list_course_name);
-            mCourseCodeTextView = (TextView) itemView.findViewById(R.id.list_course_code);
+            mCourseNameTextView = (TextView) itemView.findViewById(R.id.card_course_name);
+            mCourseCodeTextView = (TextView) itemView.findViewById(R.id.card_course_code);
+            mStudentsSubscribed = (TextView) itemView.findViewById(R.id.card_course_studentsSub);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             SharedPreferencesUtils.setCurrentCourseKey(mCourseListFragment.getContext(), mCourses.get(getAdapterPosition()).getKey());
+            //SharedPreferencesUtils.setCurrentCourseKey(mCourseListFragment.getContext(), mCourses.get(getAdapterPosition()).getKey());
             Course course = mCourses.get(getAdapterPosition());
             mCourseSelectedListener.onCourseSelected(course);
         }

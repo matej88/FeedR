@@ -55,7 +55,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_course,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_questions,parent,false);
         return new ViewHolder(v);
     }
 
@@ -129,7 +129,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mQuestionTextView = (TextView) itemView.findViewById(R.id.list_course_name);
+            mQuestionTextView = (TextView) itemView.findViewById(R.id.row_question_tv);
             itemView.setOnClickListener(this);
         }
 

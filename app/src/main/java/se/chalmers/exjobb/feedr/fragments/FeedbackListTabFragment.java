@@ -120,8 +120,8 @@ public class FeedbackListTabFragment extends Fragment {
         public FeedbacksViewHolder(View itemView) {
             super(itemView);
 
-            mFeedbackTextView = (TextView) itemView.findViewById(R.id.list_course_name);
-            mUsernameTextView = (TextView) itemView.findViewById(R.id.list_course_code);
+            mFeedbackTextView = (TextView) itemView.findViewById(R.id.card_course_name);
+            mUsernameTextView = (TextView) itemView.findViewById(R.id.card_course_code);
         }
 
 

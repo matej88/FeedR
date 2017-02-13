@@ -63,12 +63,7 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
 
             holder.mSurveyNameTextView.setText(mSurveys.get(position).getSurveyName());
 
-            if( mSurveys.get(position).getAnswers() != null){
-                int a = mSurveys.get(position).getAnswers().size();
-                holder.mSurveyAnswersTextView.setText(Integer.toString(a));
-            } else {
-                holder.mSurveyAnswersTextView.setText("No answers yet");
-            }
+
 
 
         }
@@ -101,6 +96,7 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 add(dataSnapshot);
+            mSurveyListTabFragment.setText(getItemCount());
             notifyDataSetChanged();
         }
 
@@ -108,6 +104,7 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             remove(dataSnapshot.getKey());
             add(dataSnapshot);
+            mSurveyListTabFragment.setText(getItemCount());
             notifyDataSetChanged();
         }
 
@@ -132,14 +129,14 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView mSurveyNameTextView;
-        private TextView mSurveyAnswersTextView;
+
         private TextView mNoSurveys;
 
 
         public ViewHolder(View itemView) {
             super(itemView);
             mSurveyNameTextView = (TextView) itemView.findViewById(R.id.list_survey_name);
-            mSurveyAnswersTextView = (TextView) itemView.findViewById(R.id.list_survey_answers_nr);
+
             mNoSurveys = (TextView) itemView.findViewById(R.id.list_survey_no_surveys);
 
 
@@ -149,6 +146,8 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
         @Override
         public void onClick(View view) {
             SharedPreferencesUtils.setCurrentSurveyKey(mSurveyListTabFragment.getContext(), mSurveys.get(getAdapterPosition()).getKey());
+            SharedPreferencesUtils.setCurrentSurveyName(mSurveyListTabFragment.getContext(), mSurveys.get(getAdapterPosition()).getSurveyName());
+
             mSurveySelectedListener.onSurveyClicked();
 
         }

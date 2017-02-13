@@ -15,15 +15,18 @@ public class Feedback  {
     private long timestamp;
     private String feedback;
     private int rating;
-
+    private String sessionKey;
+    private String courseKey;
     public Feedback(){
 
     }
-    public Feedback(String username,String feedback, int rating, long timestamp) {
+    public Feedback(String username,String feedback, int rating, long timestamp, String sessionKey,String courseKey) {
         this.username = username;
         this.feedback = feedback;
         this.rating = rating;
         this.timestamp = timestamp;
+        this.sessionKey = sessionKey;
+        this.courseKey = courseKey;
     }
 
 
@@ -58,5 +61,21 @@ public class Feedback  {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getSessionKey() {
+        return sessionKey;
+    }
+
+    public void setSessionKey(String sessionKey) {
+        this.sessionKey = sessionKey;
+    }
+
+    public String getCourseKey() {
+        return courseKey;
+    }
+
+    public void setCourseKey(String courseKey) {
+        this.courseKey = courseKey;
     }
 }

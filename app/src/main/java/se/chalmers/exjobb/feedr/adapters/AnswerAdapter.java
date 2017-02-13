@@ -133,7 +133,7 @@ public class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mAnswerTextView = (TextView) itemView.findViewById(R.id.list_course_name);
+            mAnswerTextView = (TextView) itemView.findViewById(R.id.card_course_name);
         }
     }
 }

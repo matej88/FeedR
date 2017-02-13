@@ -41,6 +41,7 @@ import se.chalmers.exjobb.feedr.fragments.AddSurveyFragment;
 import se.chalmers.exjobb.feedr.fragments.AnswerListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
+import se.chalmers.exjobb.feedr.fragments.LiveSessionFragment;
 import se.chalmers.exjobb.feedr.fragments.LoginFragment;
 import se.chalmers.exjobb.feedr.fragments.RegisterFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
@@ -59,12 +60,13 @@ public class MainActivity extends AppCompatActivity implements
         AddSurveyFragment.OnSurveyAddListener,
         SurveyOverviewFragment.OnSurveyQuestionClickedListener,
         LoginFragment.OnLoginListener,
-        RegisterFragment.onRegisterListener
+        RegisterFragment.onRegisterListener,
+        CourseOverviewFragment.CourseOverviewCallback
 
 {
     private DatabaseReference mDataRef;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private OnCompleteListener mOnCompleteListener;
     private Toolbar toolbar;
 
@@ -76,12 +78,14 @@ public class MainActivity extends AppCompatActivity implements
         // if the android version of the smartphone is android 5.0 or greater then disable the shadows from the GUI
         // These shadows are meant to make the GUI for older phones look like Google Material Design. This is done for the esthetics
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            findViewById(R.id.gradientShadow).setVisibility(View.GONE);
+          //  findViewById(R.id.gradientShadow).setVisibility(View.GONE);
         }
-
-        mAuth = FirebaseAuth.getInstance();
-
         setupToolbar();
+        mAuth = FirebaseAuth.getInstance();
+        mDataRef = FirebaseDatabase.getInstance().getReference();
+        mDataRef.keepSynced(true);
+
+
         setupNavigationDrawer();
 
 
@@ -89,15 +93,10 @@ public class MainActivity extends AppCompatActivity implements
 
         // make the LoginFragment first page
         switchToLoginFragment();
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//
-//        ft.add(R.id.fragment_container, new LoginFragment(), "Login");
-//        ft.commit();
 
         initializeListeners();
 
-        mDataRef = FirebaseDatabase.getInstance().getReference();
-        mDataRef.keepSynced(true);
+
     }
 
     private void switchToLoginFragment() {
@@ -143,12 +142,13 @@ public class MainActivity extends AppCompatActivity implements
 
     // Initialize listeners
     private void initializeListeners() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                final String teacherUid = user.getUid();
+
                 if (user != null) {
+                    final String teacherUid = user.getUid();
                     mDataRef.child("users/teachers/" + user.getUid() + "/name").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements
                     String userUid = mAuth.getCurrentUser().getUid();
                     DatabaseReference currentUserRef = mDataRef.child("users/teachers/" + userUid);
                     currentUserRef.child("name").setValue(userName);
-                    switchToLoginFragment();
+                    switchToCourseListFragment(userUid);
                 }
             }
         });
@@ -226,14 +226,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthStateListener);
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthStateListener != null) {
-            mAuth.removeAuthStateListener(mAuthStateListener);
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
@@ -315,10 +315,10 @@ public class MainActivity extends AppCompatActivity implements
 
     // Go to CourseOverviewFragment when a course in CourseListFragment is selected
     @Override
-    public void onCourseSelected(Course selectedCourse) {
-        SharedPreferencesUtils.setCurrentSurveyKey(getApplicationContext(), selectedCourse.getKey());
+    public void onCourseSelected(Course c) {
+        SharedPreferencesUtils.setCurrentSurveyKey(getApplicationContext(), c.getKey());
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(selectedCourse);
+        CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(c);
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack("back_to_course_list");
         ft.commit();
@@ -358,9 +358,9 @@ public class MainActivity extends AppCompatActivity implements
 
     // Save a survey to a database
     @Override
-    public void onSurveyAdded(String courseKey, ArrayList<Question> questions) {
-        // TODO Edit that teacher can name the Survey
-        Survey survey = new Survey(courseKey, "New Survey");
+    public void onSurveyAdded(String courseKey, ArrayList<Question> questions, String surveyName) {
+
+        Survey survey = new Survey(courseKey, surveyName);
         DatabaseReference mSurveysRef = mDataRef.child("surveys");
         // Save the survey key in database
         String key = mSurveysRef.push().getKey();
@@ -388,4 +388,12 @@ public class MainActivity extends AppCompatActivity implements
         ft.commit();
     }
 
+    @Override
+    public void startSession() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        LiveSessionFragment fragment = new LiveSessionFragment();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("back_to_course_overview");
+        ft.commit();
+    }
 }

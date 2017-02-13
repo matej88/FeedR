@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
+import org.w3c.dom.Text;
 
 import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.adapters.SurveyAdapter;
@@ -28,6 +30,9 @@ public class SurveyListTabFragment extends Fragment {
     private String mCurrentCourseKey;
     private SurveyAdapter mAdapter;
     private OnSurveyClickListener mListener;
+    private TextView mNoSurveys;
+
+
 
 
     public SurveyListTabFragment() {
@@ -61,7 +66,8 @@ public class SurveyListTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_survey_list_tab, container, false);
-
+        mNoSurveys = (TextView) view.findViewById(R.id.list_survey_no_surveys);
+        setText(0);
 
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addSurvey);
@@ -85,12 +91,13 @@ public class SurveyListTabFragment extends Fragment {
           return view;
     }
 
-
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onSurveyClicked();
+        public void setText(int b){
+            if(b == 0){
+                mNoSurveys.setText("There are no surveys");
+            }else{
+                mNoSurveys.setText("");
+            }
         }
-    }
 
     @Override
     public void onAttach(Context context) {

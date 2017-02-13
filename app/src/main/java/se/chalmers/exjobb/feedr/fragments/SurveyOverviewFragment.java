@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,14 +37,7 @@ public class SurveyOverviewFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
 
-     * @return A new instance of fragment SurveyOverviewFragment.
-     */
 
 //    public static SurveyOverviewFragment newInstance(Survey survey) {
 //        SurveyOverviewFragment fragment = new SurveyOverviewFragment();
@@ -69,7 +63,8 @@ public class SurveyOverviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_survey_overview, container, false);
        // questions = mSurvey.getQuestions();
-
+        TextView surveyName = (TextView) view.findViewById(R.id.survey_overview_name);
+        surveyName.setText(SharedPreferencesUtils.getCurrentSurveyName(getContext()));
         mSurveyKey = SharedPreferencesUtils.getCurrentSurveyKey(view.getContext());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.survey_overview_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -32,4 +32,16 @@
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">20sp</item>
     </style>
+
+    <style name="AppThemeSurveyButton" parent="AppTheme">
+        <item name="android:width">35dp</item>
+        <item name="android:height">35dp</item>
+        <item name="android:background">#0076FF</item>
+        <item name="android:textColor">#fff</item>
+
+    </style>
+
+    <style name="Color1SwitchStyle">
+        <item name="colorControlActivated">#fff</item>
+    </style>
 </resources>

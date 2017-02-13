@@ -59,6 +59,19 @@ public class SharedPreferencesUtils {
         editor.commit();
     }
 
+    public static String getCurrentSurveyName (Context context){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        return prefs.getString(Constants.SURVEY_NAME, "");
+    }
+
+    public static void setCurrentSurveyName(Context context, String surveyKey){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.SURVEY_NAME, surveyKey);
+        editor.commit();
+    }
+
+
     public static String getCurrentSession (Context context){
         SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
         return prefs.getString(Constants.SESSION_KEY, "");

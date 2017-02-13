@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by matej on 2017-01-03.
  */
@@ -16,6 +19,8 @@ public class Course implements Parcelable {
     private String teacher;
     private String teacherUid;
     private boolean isOnline;
+    private Map<String, Boolean> students;
+    private Map<String, Session> sessions;
 
     @JsonIgnore
     private String key;
@@ -30,6 +35,10 @@ public class Course implements Parcelable {
             this.teacher = teacher;
             this.teacherUid = teacherUid;
             isOnline = false;
+            students = new HashMap<>();
+            sessions = new HashMap<>();
+
+
     }
 
 
@@ -37,6 +46,9 @@ public class Course implements Parcelable {
         name = in.readString();
         code = in.readString();
         teacher = in.readString();
+        teacherUid = in.readString();
+        isOnline = in.readByte() != 0;
+        key = in.readString();
     }
 
     public static final Creator<Course> CREATOR = new Creator<Course>() {
@@ -99,6 +111,23 @@ public class Course implements Parcelable {
         this.key = key;
     }
 
+    public Map<String, Boolean> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Map<String, Boolean> students) {
+        this.students = students;
+    }
+
+    public Map<String,Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(Map<String, Session> sessions) {
+        this.sessions = sessions;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -109,5 +138,8 @@ public class Course implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(code);
         parcel.writeString(teacher);
+        parcel.writeString(teacherUid);
+        parcel.writeByte((byte) (isOnline ? 1 : 0));
+        parcel.writeString(key);
     }
 }

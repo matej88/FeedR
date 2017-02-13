@@ -2,16 +2,19 @@ package se.chalmers.exjobb.feedr.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +28,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,41 +41,40 @@ import se.chalmers.exjobb.feedr.models.Feedback;
 import se.chalmers.exjobb.feedr.models.Session;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CourseOverviewFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+
 public class CourseOverviewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_COURSE = "course";
-    private DatabaseReference mDataRef;
-    private DatabaseReference onlineRef;
-    private DatabaseReference sessionNr;
-    private DatabaseReference sessionRef;
 
-    private TextView courseName;
-    private TextView courseCode;
-
-    private Switch onOff;
-    private TextView onOffTV;
-
+    private CourseOverviewCallback mListener;
     private Course mCourse;
-    private TextView courseRating;
 
-    private Boolean isOnline;
-    private Boolean sessionOnline;
-    private ArrayList<Feedback> feeds = new ArrayList<>();
     // Stores two fragments on the main page
     private ViewPager mViewPagerSingleCourse;
 
     // Enables to swipe through the fragments on main page
     private TabLayout mTabLayoutSingleCourse;
 
-    private int sessNr;
+
+    private DatabaseReference mDataRef;
+    private DatabaseReference mCourseRef;
 
 
+    //GUI
+    private TextView courseName;
+    private TextView courseCode;
+    private TextView courseStatus;
+    private TextView openSession;
+    private TextView courseRatings;
+    private SwitchCompat onOffSwitch;
+    private boolean courseIsOnline;
+    private RelativeLayout onOffLayout;
+    // to store number of sessions
+    private int numberOfSess;
 
+    // store ratings of all sesions
+    private double courseRating;
 
     public CourseOverviewFragment() {
         // Required empty public constructor
@@ -90,60 +94,110 @@ public class CourseOverviewFragment extends Fragment {
         if (getArguments() != null) {
             mCourse = getArguments().getParcelable(ARG_COURSE);
         }
+        //courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
         mDataRef = FirebaseDatabase.getInstance().getReference();
-        onlineRef = mDataRef.child("courses").child(mCourse.getKey()).child("online");
-        sessionRef = mDataRef.child("courses").child(mCourse.getKey()).child("sessions");
-        sessionNr = mDataRef.child("courses").child(mCourse.getKey()).child("sessions");
-        getSessionNr();
 
-        onlineRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                isOnline = (Boolean) dataSnapshot.getValue();
-                oniOffi();
+        //get the reference for the selected course
+        mCourseRef = mDataRef.child("courses").child(mCourse.getKey());
+
+        mCourseRef.addValueEventListener(new CourseValueEventListener());
+
+        getFeedbacks();
+    }
+
+    private class CourseValueEventListener implements ValueEventListener {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Course course = dataSnapshot.getValue(Course.class);
+            mCourse = course;
+
+            if(course.getSessions() != null){
+                numberOfSess = course.getSessions().size();
+
+            }else{
+                numberOfSess = 0;
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            updateGUI(course);
+        }
 
-            }
-        });
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
 
+        }
     }
 
 
+    public void getFeedbacks(){
+            DatabaseReference feedbackRefs = mDataRef.child("feedbacks");
+            String courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
+             final ArrayList<Feedback> feeds = new ArrayList<>();
+
+            Query feedsQuery = feedbackRefs.orderByChild("courseKey").equalTo(courseKey);
+            feedsQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                  Iterable<DataSnapshot> feedbacks = dataSnapshot.getChildren();
 
 
-    public void getSessionNr(){
-
-        sessionNr.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                    int i = 0;
-
-                if(children != null) {
-                    for (DataSnapshot s : children) {
-                            i++;
+                    for( DataSnapshot ds : feedbacks){
+                        Feedback f = ds.getValue(Feedback.class);
+                        feeds.add(f);
                     }
-                }else{
-                    Toast.makeText(getContext(), "Sessions = null", Toast.LENGTH_SHORT).show();
+                    getCourseRating(feeds);
                 }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
+                }
+            });
+    }
 
-                sessNr = i;
-            }
+    public void getCourseRating(ArrayList<Feedback> feeds){
+        int totalNrOfRatings = feeds.size();
+        int ratingsAdded = 0;
+        for(int i = 0; i < totalNrOfRatings; i++){
+            ratingsAdded += feeds.get(i).getRating();
+        }
+        if(ratingsAdded != 0) {
+            double temp = ratingsAdded / totalNrOfRatings;
+            Toast.makeText(getContext(), "Rating = " + temp, Toast.LENGTH_SHORT).show();
+        }else{
+            double temp = 0;
+            Toast.makeText(getContext(), "Rating = " + temp, Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+    }
+    public void updateRatings(double rating){
+        courseRatings.setText(String.valueOf(rating));
+       // Toast.makeText(getContext(), "Rating = " + rating, Toast.LENGTH_SHORT).show();
+    }
 
-            }
-        });
+    public void updateGUI(Course course){
+        courseName.setText(course.getName());
+        courseCode.setText(course.getCode());
 
+        if(course.isOnline()){
+            courseIsOnline = true;
+            onOffLayout.setBackgroundColor(Color.parseColor("#66bb6a"));
+            courseStatus.setText("Online");
+            openSession.setText("Open session");
+            openSession.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.startSession();
+                }
+            });
+            onOffSwitch.setChecked(true);
+        }else{
+            courseIsOnline = false;
+            onOffLayout.setBackgroundColor(Color.parseColor("#ef5350"));
+            courseStatus.setText("Offline");
+            openSession.setText("");
+            onOffSwitch.setChecked(false);
+        }
 
     }
 
@@ -152,9 +206,18 @@ public class CourseOverviewFragment extends Fragment {
         super.onStart();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
 
 
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateGUI(mCourse);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -164,69 +227,49 @@ public class CourseOverviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_overview, container, false);
 
-
         courseName = (TextView) view.findViewById(R.id.course_overview_name);
         courseCode = (TextView) view.findViewById(R.id.course_overview_code);
-        courseName.setText(mCourse.getName());
-        courseCode.setText(mCourse.getCode());
-
-        onOffTV = (TextView) view.findViewById(R.id.textViewOnOff);
-        onOff = (Switch) view.findViewById(R.id.course_switch);
-
-
-        onOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean online) {
-                if(!isOnline && online){
-                    onlineRef.setValue(true);
-
-                    Toast.makeText(context, "Its online now", Toast.LENGTH_SHORT).show();
-                    isOnline = true;
-
-                    Session s = new Session(sessNr+1,false, ServerValue.TIMESTAMP);
-                    String key = sessionRef.push().getKey();
-                    SharedPreferencesUtils.setCurrentSessionKey(context, key);
-                    sessionRef.child(key).setValue(s);
-                    Toast.makeText(context, "session key is " + key, Toast.LENGTH_SHORT).show();
-                    openSessionsFragment();
-                }
-                else if(!online){
-                    onlineRef.setValue(false);
-
-                    Toast.makeText(context, "its offline now", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        courseStatus = (TextView) view.findViewById(R.id.course_overview_status);
+        courseRatings = (TextView) view.findViewById(R.id.course_overview_rating);
+        openSession = (TextView) view.findViewById(R.id.course_overview_open_session);
+        onOffSwitch = (SwitchCompat) view.findViewById(R.id.course_switch);
+        onOffLayout = (RelativeLayout) view.findViewById(R.id.onoff_layout);
+        switchListener();
         setupTabs(view);
 
         return view;
     }
 
-    private void openSessionsFragment(){
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        LiveSessionFragment fragment = new LiveSessionFragment();
-        ft.replace(R.id.fragment_container, fragment);
-        ft.addToBackStack("back_to_course_overview");
-        ft.commit();
-    }
-    public void oniOffi(){
-        if(isOnline){
-            onOff.setChecked(true);
-            onOffTV.setText("Online");
-            TextView check = (TextView) getView().findViewById(R.id.textView3);
-            check.setText("View session");
-            check.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openSessionsFragment();
-                }
-            });
-        } else{
-            onOff.setChecked(false);
-            onOffTV.setText("Offi");
+    public void switchListener(){
+        onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean switchedOn) {
+                if(!courseIsOnline && switchedOn){
+                    // set online value in database to true
+                    DatabaseReference onlineRef = mCourseRef.child("online");
+                    onlineRef.setValue(true);
 
-        }
+
+
+                    // start a new session and store it in a database
+                    DatabaseReference sessionRef = mCourseRef.child("sessions");
+                    Session s = new Session(numberOfSess+1,false);
+                    String sessionKey = sessionRef.push().getKey();
+                    SharedPreferencesUtils.setCurrentSessionKey(getContext(), sessionKey);
+                    sessionRef.child(sessionKey).setValue(s);
+                    mListener.startSession();
+                    Toast.makeText(getContext(), "The course was offline but is now online", Toast.LENGTH_SHORT).show();
+
+                }else if(courseIsOnline && !switchedOn){
+                    Toast.makeText(getContext(), "The course is offline", Toast.LENGTH_SHORT).show();
+                    mCourseRef.child("online").setValue(false);
+                }
+
+            }
+        });
     }
+
+
 
     public double getRating(ArrayList<Feedback> feeds){
         int totalNrOfRatings = feeds.size();
@@ -270,11 +313,6 @@ public class CourseOverviewFragment extends Fragment {
         });
     }
 
-    public void updateGui(Course course){
-        courseName.setText(course.getName());
-        courseCode.setText(course.getCode());
-
-    }
 
     // Populate the adapter with fragments
     private void setupViewPager(ViewPager mViewPager){
@@ -289,39 +327,25 @@ public class CourseOverviewFragment extends Fragment {
         mViewPager.setAdapter(adapter);
     }
 
-
-    private class CourseEventListener implements ChildEventListener {
-
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            mCourse = dataSnapshot.getValue(Course.class);
-            Toast.makeText(getContext(), "This is course code" + mCourse.getName(), Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                mCourse = dataSnapshot.getValue(Course.class);
-                Toast.makeText(getContext(), "This is course code" + mCourse.getName(), Toast.LENGTH_SHORT).show();
-                updateGui(mCourse);
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof CourseOverviewCallback) {
+            mListener = (CourseOverviewCallback) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement CourseOverviewCallback");
         }
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface CourseOverviewCallback {
+        void startSession();
+    }
+
 }

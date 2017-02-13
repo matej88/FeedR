@@ -139,9 +139,9 @@ public class CourseListFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String courseName = courseNameEditText.getText().toString();
                         String courseCode = courseCodeEditText.getText().toString();
-                        courseCode.toUpperCase();
+                        String coureToUpperCase = courseCode.toUpperCase();
                         String teacherName = SharedPreferencesUtils.getCurrentTeacherName(getContext());
-                        Course c = new Course(courseName,courseCode,teacherName,mTeacherUid);
+                        Course c = new Course(courseName,coureToUpperCase,teacherName,mTeacherUid);
                         mClickListener.onAddCourse(c);
                         Toast.makeText(getActivity(), "Created Course", Toast.LENGTH_LONG).show();
                     }
@@ -155,7 +155,7 @@ public class CourseListFragment extends Fragment {
 
 
     public interface OnCourseSelectedListener {
-        void onCourseSelected(Course selectedCourse);
+        void onCourseSelected(Course c);
         void onAddCourse(Course newCourse);
     }
 }
