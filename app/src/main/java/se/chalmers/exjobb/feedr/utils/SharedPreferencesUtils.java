@@ -77,11 +77,21 @@ public class SharedPreferencesUtils {
         return prefs.getString(Constants.SESSION_KEY, "");
     }
 
+    public static void setIsTeacher(Context context, boolean b){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("Constants.IS_TEACHER", b);
+        editor.commit();
+    }
+    public static boolean getIsTeacher (Context context){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
+        return prefs.getBoolean("Constants.IS_TEACHER", false);
+    }
+
     public static void setCurrentSessionKey(Context context, String sessionKey){
         SharedPreferences prefs = context.getSharedPreferences(Constants.PREFS, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(Constants.SESSION_KEY, sessionKey);
         editor.commit();
     }
-
 }

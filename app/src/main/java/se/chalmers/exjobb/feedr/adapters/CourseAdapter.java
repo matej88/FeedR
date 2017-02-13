@@ -65,8 +65,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         holder.mCourseNameTextView.setText(mCourses.get(position).getName());
         holder.mCourseCodeTextView.setText(mCourses.get(position).getCode());
 
-        if(mCourses.get(position).getStudents() != null){
-            holder.mStudentsSubscribed.setText(mCourses.get(position).getStudents().size());
+        if(mCourses.get(position).getSubscribers() != null){
+            holder.mStudentsSubscribed.setText(Integer.toString(mCourses.get(position).getSubscribers().size()));
         }else{
             holder.mStudentsSubscribed.setText("0");
         }

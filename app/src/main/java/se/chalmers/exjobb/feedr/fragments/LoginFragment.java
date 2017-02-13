@@ -2,6 +2,7 @@ package se.chalmers.exjobb.feedr.fragments;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -52,9 +53,7 @@ public class LoginFragment extends Fragment {
         //hide the appbar/toolbar
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
-
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-
         mEmail = (EditText) view.findViewById(R.id.login_email_field);
         mPassword = (EditText) view.findViewById(R.id.login_password_field);
         mLoginButton = (Button) view.findViewById(R.id.login_button);

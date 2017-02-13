@@ -20,9 +20,9 @@
         android:layout_width="match_parent"
         android:text="Course Name"
         android:id="@+id/course_overview_name"
-        android:textSize="22dp"
+        android:textSize="30dp"
         android:textStyle="bold"
-        android:paddingTop="16dp"
+        android:paddingTop="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         />
@@ -38,36 +38,107 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
-        />
-    <LinearLayout
+        android:textSize="18sp" />
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="1">
+        android:background="@color/colorAccent"
+        android:padding="16dp"
+
+        >
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_weight="0.5"
-            android:text="RATING"
-
-            android:gravity="center"
-
-            android:id="@+id/course_overview_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course info"
+            android:textSize="24sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:id="@+id/ov_course_info"
             />
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Students subscribed:"
+            android:textColor="#fff"
+            android:layout_below="@+id/ov_course_info"
+            android:id="@+id/ov_students_subscribed_tv"
+            android:layout_marginTop="8dp"/>
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_weight="0.5"
-            android:text="CHART"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#fff"
+            android:id="@+id/ov_nr_of_students"
+            android:layout_toRightOf="@+id/ov_students_subscribed_tv"
+            android:layout_below="@+id/ov_course_info"
+            android:paddingLeft="8dp"
+            android:layout_marginTop="8dp"/>
 
-            android:gravity="center"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feedbacks:"
+            android:textColor="#fff"
+            android:id="@+id/ov_students_feedbacks_tv"
+            android:layout_below="@+id/ov_students_subscribed_tv"
+            android:layout_marginTop="8dp"/>
 
-            android:id="@+id/textViewChart"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#fff"
+            android:id="@+id/ov_nr_of_feedbacks"
+            android:layout_below="@+id/ov_students_subscribed_tv"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/ov_students_feedbacks_tv"
+            android:paddingLeft="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sessions:"
+            android:textColor="#fff"
+            android:id="@+id/ov_students_sessions_tv"
+            android:layout_below="@+id/ov_students_feedbacks_tv"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#fff"
+            android:id="@+id/ov_nr_of_sessions"
+            android:layout_below="@+id/ov_students_feedbacks_tv"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/ov_students_sessions_tv"
+            android:paddingLeft="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Overall Rating"
+            android:textSize="20dp"
+            android:textColor="#fff"
+            android:id="@+id/ov_overall_rating_tv"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
             />
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#fff"
+            android:textSize="32dp"
+            android:layout_marginRight="45dp"
+            android:layout_marginTop="8dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/ov_overall_rating_tv"
+            android:id="@+id/ov_overall_rating"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -128,7 +199,7 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_single_course"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="342dp"
         />
 
 </LinearLayout>

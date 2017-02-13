@@ -80,6 +80,8 @@ public class CourseListFragment extends Fragment {
         Context context = getContext();
 
 
+
+
         //hide the appbar/toolbar
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         // Inflate the layout for this fragment
@@ -143,7 +145,7 @@ public class CourseListFragment extends Fragment {
                         String teacherName = SharedPreferencesUtils.getCurrentTeacherName(getContext());
                         Course c = new Course(courseName,coureToUpperCase,teacherName,mTeacherUid);
                         mClickListener.onAddCourse(c);
-                        Toast.makeText(getActivity(), "Created Course", Toast.LENGTH_LONG).show();
+
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, null);

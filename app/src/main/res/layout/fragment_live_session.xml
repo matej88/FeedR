@@ -2,20 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="se.chalmers.exjobb.feedr.fragments.LiveSessionFragment">
-
-    <!-- <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="#eee"
-        android:id="@+id/graph_container">
-
-    </FrameLayout>
--->
+    tools:context="se.chalmers.exjobb.feedr.fragments.LiveSessionFragment"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="8dp">
 
     <com.jjoe64.graphview.GraphView
         android:layout_width="match_parent"
-        android:layout_height="250dip"
+        android:layout_height="200dip"
         android:id="@+id/graph" />
 
     <TextView

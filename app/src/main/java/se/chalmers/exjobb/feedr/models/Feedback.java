@@ -3,6 +3,8 @@ package se.chalmers.exjobb.feedr.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Map;
 
 /**
@@ -17,16 +19,23 @@ public class Feedback  {
     private int rating;
     private String sessionKey;
     private String courseKey;
+    private boolean isTeacher;
+    boolean isReplied;
+    private String answer;
+
+    @Exclude
+    String feedbackKey;
+
     public Feedback(){
 
     }
-    public Feedback(String username,String feedback, int rating, long timestamp, String sessionKey,String courseKey) {
-        this.username = username;
+    public Feedback(String feedback, int rating, long timestamp, String sessionKey,String courseKey, boolean isTeacher) {
         this.feedback = feedback;
         this.rating = rating;
         this.timestamp = timestamp;
         this.sessionKey = sessionKey;
         this.courseKey = courseKey;
+        this.isTeacher = isTeacher;
     }
 
 
@@ -77,5 +86,37 @@ public class Feedback  {
 
     public void setCourseKey(String courseKey) {
         this.courseKey = courseKey;
+    }
+
+    public boolean isTeacher() {
+        return isTeacher;
+    }
+
+    public void setTeacher(boolean teacher) {
+        isTeacher = teacher;
+    }
+
+    public boolean isReplied() {
+        return isReplied;
+    }
+
+    public void setReplied(boolean replied) {
+        isReplied = isReplied;
+    }
+
+    public String getFeedbackKey() {
+        return feedbackKey;
+    }
+
+    public void setFeedbackKey(String feedbackKey) {
+        this.feedbackKey = feedbackKey;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

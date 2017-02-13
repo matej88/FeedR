@@ -19,7 +19,7 @@ public class Course implements Parcelable {
     private String teacher;
     private String teacherUid;
     private boolean isOnline;
-    private Map<String, Boolean> students;
+    private Map<String, Boolean> subscribers;
     private Map<String, Session> sessions;
 
     @JsonIgnore
@@ -35,7 +35,7 @@ public class Course implements Parcelable {
             this.teacher = teacher;
             this.teacherUid = teacherUid;
             isOnline = false;
-            students = new HashMap<>();
+            subscribers = new HashMap<>();
             sessions = new HashMap<>();
 
 
@@ -111,12 +111,12 @@ public class Course implements Parcelable {
         this.key = key;
     }
 
-    public Map<String, Boolean> getStudents() {
-        return students;
+    public Map<String, Boolean> getSubscribers() {
+        return subscribers;
     }
 
-    public void setStudents(Map<String, Boolean> students) {
-        this.students = students;
+    public void setSubscribers(Map<String, Boolean> subscribers) {
+        this.subscribers = subscribers;
     }
 
     public Map<String,Session> getSessions() {

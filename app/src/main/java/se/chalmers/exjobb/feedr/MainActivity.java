@@ -7,16 +7,11 @@ import android.support.annotation.NonNull;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -41,6 +36,7 @@ import se.chalmers.exjobb.feedr.fragments.AddSurveyFragment;
 import se.chalmers.exjobb.feedr.fragments.AnswerListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
+import se.chalmers.exjobb.feedr.fragments.FeedbackListTabFragment;
 import se.chalmers.exjobb.feedr.fragments.LiveSessionFragment;
 import se.chalmers.exjobb.feedr.fragments.LoginFragment;
 import se.chalmers.exjobb.feedr.fragments.RegisterFragment;
@@ -54,14 +50,15 @@ import se.chalmers.exjobb.feedr.models.Survey;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener,
+
         CourseListFragment.OnCourseSelectedListener,
         SurveyListTabFragment.OnSurveyClickListener,
         AddSurveyFragment.OnSurveyAddListener,
         SurveyOverviewFragment.OnSurveyQuestionClickedListener,
         LoginFragment.OnLoginListener,
         RegisterFragment.onRegisterListener,
-        CourseOverviewFragment.CourseOverviewCallback
+        CourseOverviewFragment.CourseOverviewCallback,
+        FeedbackListTabFragment.FeedbackTabCallback
 
 {
     private DatabaseReference mDataRef;
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
         // if the android version of the smartphone is android 5.0 or greater then disable the shadows from the GUI
         // These shadows are meant to make the GUI for older phones look like Google Material Design. This is done for the esthetics
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          //  findViewById(R.id.gradientShadow).setVisibility(View.GONE);
+           // findViewById(R.id.gradientShadow).setVisibility(View.GONE);
         }
         setupToolbar();
         mAuth = FirebaseAuth.getInstance();
@@ -86,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
         mDataRef.keepSynced(true);
 
 
-        setupNavigationDrawer();
+      //  setupNavigationDrawer();
 
 
 
@@ -116,17 +113,17 @@ public class MainActivity extends AppCompatActivity implements
         mTitle.setText("FeedLoop");
     }
 
-    public void setupNavigationDrawer(){
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-    }
+//    public void setupNavigationDrawer(){
+//
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.setDrawerListener(toggle);
+//        toggle.syncState();
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
+//
+//    }
 
 
     // Switch to CourseListFragment
@@ -149,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (user != null) {
                     final String teacherUid = user.getUid();
+                    SharedPreferencesUtils.setIsTeacher(getApplicationContext(), true);
                     mDataRef.child("users/teachers/" + user.getUid() + "/name").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -240,12 +238,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
             super.onBackPressed();
-        }
+        //}
     }
 
     @Override
@@ -263,40 +261,40 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_signout) {
+            onLogout();
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        Fragment switchTo = null;
-
-        // Handle navigation view item clicks here.
-        switch (item.getItemId()) {
-            case R.id.nav_courses:
-                switchTo = new CourseListFragment();
-                break;
-            case R.id.nav_surveys:
-                break;
-            case R.id.nav_logout:
-                onLogout();
-
-        }
-
-        if (switchTo != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_container, switchTo);
-            ft.commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+//
+//    @SuppressWarnings("StatementWithEmptyBody")
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem item) {
+//
+//        Fragment switchTo = null;
+//
+//        // Handle navigation view item clicks here.
+//        switch (item.getItemId()) {
+//            case R.id.nav_courses:
+//                switchTo = new CourseListFragment();
+//                break;
+//            case R.id.nav_surveys:
+//                break;
+//            case R.id.nav_logout:
+//                onLogout();
+//
+//        }
+//
+//        if (switchTo != null) {
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            ft.replace(R.id.fragment_container, switchTo);
+//            ft.commit();
+//        }
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
+//        return true;
+//    }
 
 
 
@@ -395,5 +393,12 @@ public class MainActivity extends AppCompatActivity implements
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack("back_to_course_overview");
         ft.commit();
+    }
+
+    @Override
+    public void questionReply(String answer, String feedbackKey) {
+            DatabaseReference feedAnswer = mDataRef.child("feedbacks").child(feedbackKey);
+        feedAnswer.child("answer").setValue(answer);
+        feedAnswer.child("isReplied").setValue(true);
     }
 }

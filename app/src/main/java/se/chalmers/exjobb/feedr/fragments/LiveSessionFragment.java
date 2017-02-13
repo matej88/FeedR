@@ -119,7 +119,9 @@ public class LiveSessionFragment extends Fragment {
                 int res = ran.nextInt(high - low) + low;
 
                 long unixTime = System.currentTimeMillis() / 1000L;
-                Feedback f = new Feedback("matej","feed", res , unixTime, sessionKey, courseKey);
+
+
+                Feedback f = new Feedback("feed", res , unixTime, sessionKey, courseKey,false);
 
                 mFeedbacksRef.push().setValue(f);
             }

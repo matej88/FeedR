@@ -16,7 +16,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords|textPersonName"
         android:ems="10"
         android:layout_below="@+id/dialog_text_view"
         android:layout_marginTop="24dp"
@@ -27,7 +27,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="text|textCapCharacters"
         android:ems="10"
         android:layout_below="@+id/dialog_add_course_name"
         android:layout_marginTop="16dp"

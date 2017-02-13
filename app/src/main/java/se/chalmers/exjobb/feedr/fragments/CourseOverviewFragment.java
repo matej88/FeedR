@@ -6,38 +6,26 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import se.chalmers.exjobb.feedr.R;
+import se.chalmers.exjobb.feedr.adapters.CourseOverviewAdapter;
 import se.chalmers.exjobb.feedr.adapters.CourseTabViewPagerAdapter;
 import se.chalmers.exjobb.feedr.models.Course;
-import se.chalmers.exjobb.feedr.models.Feedback;
 import se.chalmers.exjobb.feedr.models.Session;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
@@ -49,7 +37,7 @@ public class CourseOverviewFragment extends Fragment {
 
     private CourseOverviewCallback mListener;
     private Course mCourse;
-
+    private CourseOverviewAdapter mAdapter;
     // Stores two fragments on the main page
     private ViewPager mViewPagerSingleCourse;
 
@@ -67,6 +55,9 @@ public class CourseOverviewFragment extends Fragment {
     private TextView courseStatus;
     private TextView openSession;
     private TextView courseRatings;
+    private TextView sessionNumber;
+    private TextView feedbacksNumber;
+    private TextView subsribersNumber;
     private SwitchCompat onOffSwitch;
     private boolean courseIsOnline;
     private RelativeLayout onOffLayout;
@@ -76,6 +67,9 @@ public class CourseOverviewFragment extends Fragment {
     // store ratings of all sesions
     private double courseRating;
 
+    private int numberOfFeedbacks;
+
+    private int numberOfSubscribers;
     public CourseOverviewFragment() {
         // Required empty public constructor
     }
@@ -94,6 +88,8 @@ public class CourseOverviewFragment extends Fragment {
         if (getArguments() != null) {
             mCourse = getArguments().getParcelable(ARG_COURSE);
         }
+
+        mAdapter = new CourseOverviewAdapter(this, mCourse.getKey());
         //courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
         mDataRef = FirebaseDatabase.getInstance().getReference();
 
@@ -102,7 +98,6 @@ public class CourseOverviewFragment extends Fragment {
 
         mCourseRef.addValueEventListener(new CourseValueEventListener());
 
-        getFeedbacks();
     }
 
     private class CourseValueEventListener implements ValueEventListener {
@@ -128,51 +123,27 @@ public class CourseOverviewFragment extends Fragment {
     }
 
 
-    public void getFeedbacks(){
-            DatabaseReference feedbackRefs = mDataRef.child("feedbacks");
-            String courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
-             final ArrayList<Feedback> feeds = new ArrayList<>();
-
-            Query feedsQuery = feedbackRefs.orderByChild("courseKey").equalTo(courseKey);
-            feedsQuery.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                  Iterable<DataSnapshot> feedbacks = dataSnapshot.getChildren();
-
-
-                    for( DataSnapshot ds : feedbacks){
-                        Feedback f = ds.getValue(Feedback.class);
-                        feeds.add(f);
-                    }
-                    getCourseRating(feeds);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-    }
-
-    public void getCourseRating(ArrayList<Feedback> feeds){
-        int totalNrOfRatings = feeds.size();
-        int ratingsAdded = 0;
-        for(int i = 0; i < totalNrOfRatings; i++){
-            ratingsAdded += feeds.get(i).getRating();
-        }
-        if(ratingsAdded != 0) {
-            double temp = ratingsAdded / totalNrOfRatings;
-            Toast.makeText(getContext(), "Rating = " + temp, Toast.LENGTH_SHORT).show();
-        }else{
-            double temp = 0;
-            Toast.makeText(getContext(), "Rating = " + temp, Toast.LENGTH_SHORT).show();
-        }
+    public void setRatings(double rating){
+        courseRating = rating;
+        String result = String.format("%.1f", courseRating);
+        courseRatings.setText(result);
 
     }
-    public void updateRatings(double rating){
-        courseRatings.setText(String.valueOf(rating));
-       // Toast.makeText(getContext(), "Rating = " + rating, Toast.LENGTH_SHORT).show();
+
+    public void setSessionsNumber(int size){
+        numberOfSess = size;
+        sessionNumber.setText(Integer.toString(numberOfSess));
+    }
+
+    public void setFeedbackNumber(int size){
+        numberOfFeedbacks = size;
+        feedbacksNumber.setText(Integer.toString(numberOfFeedbacks));
+
+    }
+
+    public void setSubscribersNumber(int size){
+        numberOfSubscribers = size;
+        subsribersNumber.setText(Integer.toString(numberOfSubscribers));
     }
 
     public void updateGUI(Course course){
@@ -217,6 +188,10 @@ public class CourseOverviewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateGUI(mCourse);
+        setRatings(courseRating);
+        setSessionsNumber(numberOfSess);
+        setFeedbackNumber(numberOfFeedbacks);
+        setSubscribersNumber(numberOfSubscribers);
     }
 
     @Override
@@ -230,10 +205,13 @@ public class CourseOverviewFragment extends Fragment {
         courseName = (TextView) view.findViewById(R.id.course_overview_name);
         courseCode = (TextView) view.findViewById(R.id.course_overview_code);
         courseStatus = (TextView) view.findViewById(R.id.course_overview_status);
-        courseRatings = (TextView) view.findViewById(R.id.course_overview_rating);
+        sessionNumber = (TextView) view.findViewById(R.id.ov_nr_of_sessions);
+        courseRatings = (TextView) view.findViewById(R.id.ov_overall_rating);
+        subsribersNumber = (TextView) view.findViewById(R.id.ov_nr_of_students);
         openSession = (TextView) view.findViewById(R.id.course_overview_open_session);
         onOffSwitch = (SwitchCompat) view.findViewById(R.id.course_switch);
         onOffLayout = (RelativeLayout) view.findViewById(R.id.onoff_layout);
+        feedbacksNumber = (TextView) view.findViewById(R.id.ov_nr_of_feedbacks);
         switchListener();
         setupTabs(view);
 
@@ -271,15 +249,6 @@ public class CourseOverviewFragment extends Fragment {
 
 
 
-    public double getRating(ArrayList<Feedback> feeds){
-        int totalNrOfRatings = feeds.size();
-        int ratingsAdded = 0;
-        for(int i = 0; i < totalNrOfRatings; i++){
-            ratingsAdded += feeds.get(i).getRating();
-        }
-        double temp = ratingsAdded/totalNrOfRatings;
-        return temp;
-    }
 
 
     public void setupTabs(View view){
@@ -346,6 +315,7 @@ public class CourseOverviewFragment extends Fragment {
 
     public interface CourseOverviewCallback {
         void startSession();
+
     }
 
 }
