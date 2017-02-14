@@ -23,7 +23,7 @@ public class CourseOverviewAdapter {
     private DatabaseReference mDataRef;
     private DatabaseReference mCourseRef;
     private DatabaseReference mFeedRef;
-    private DatabaseReference mSurveyRef;
+
     private String mCourseKey;
 
     private ArrayList<Feedback> feeds = new ArrayList<>();

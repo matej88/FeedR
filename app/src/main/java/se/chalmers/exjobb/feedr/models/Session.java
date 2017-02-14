@@ -1,12 +1,8 @@
 package se.chalmers.exjobb.feedr.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.ServerValue;
 
-import java.util.Collection;
-import java.util.Map;
+import com.google.firebase.database.Exclude;
+
 
 public class Session {
 

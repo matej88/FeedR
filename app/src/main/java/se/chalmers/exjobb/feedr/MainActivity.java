@@ -1,6 +1,7 @@
 package se.chalmers.exjobb.feedr;
 
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,13 +35,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.exjobb.feedr.fragments.AddSurveyFragment;
-import se.chalmers.exjobb.feedr.fragments.AnswerListFragment;
+
+import se.chalmers.exjobb.feedr.fragments.AnswersListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseListFragment;
 import se.chalmers.exjobb.feedr.fragments.CourseOverviewFragment;
 import se.chalmers.exjobb.feedr.fragments.FeedbackListTabFragment;
 import se.chalmers.exjobb.feedr.fragments.LiveSessionFragment;
 import se.chalmers.exjobb.feedr.fragments.LoginFragment;
 import se.chalmers.exjobb.feedr.fragments.RegisterFragment;
+import se.chalmers.exjobb.feedr.fragments.SessionsListTabFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyListTabFragment;
 import se.chalmers.exjobb.feedr.fragments.SurveyOverviewFragment;
 
@@ -58,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements
         LoginFragment.OnLoginListener,
         RegisterFragment.onRegisterListener,
         CourseOverviewFragment.CourseOverviewCallback,
-        FeedbackListTabFragment.FeedbackTabCallback
+        FeedbackListTabFragment.FeedbackTabCallback,
+        SessionsListTabFragment.OnSessionsListCallback
 
 {
     private DatabaseReference mDataRef;
@@ -314,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements
     // Go to CourseOverviewFragment when a course in CourseListFragment is selected
     @Override
     public void onCourseSelected(Course c) {
-        SharedPreferencesUtils.setCurrentSurveyKey(getApplicationContext(), c.getKey());
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         CourseOverviewFragment fragment = CourseOverviewFragment.newInstance(c);
         ft.replace(R.id.fragment_container, fragment);
@@ -380,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onQuestionClicked(String questionKey) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        AnswerListFragment fragment = AnswerListFragment.newInstance(questionKey);
+        AnswersListFragment fragment = AnswersListFragment.newInstance(questionKey);
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack("back_to_answer_list");
         ft.commit();
@@ -400,5 +405,16 @@ public class MainActivity extends AppCompatActivity implements
             DatabaseReference feedAnswer = mDataRef.child("feedbacks").child(feedbackKey);
         feedAnswer.child("answer").setValue(answer);
         feedAnswer.child("isReplied").setValue(true);
+    }
+
+
+
+    @Override
+    public void onSessionClicked(String sessionKey) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        LiveSessionFragment fragment = new LiveSessionFragment();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("back_to_course_overview");
+        ft.commit();
     }
 }

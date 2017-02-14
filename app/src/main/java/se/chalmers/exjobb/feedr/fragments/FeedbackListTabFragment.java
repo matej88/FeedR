@@ -32,11 +32,7 @@ import se.chalmers.exjobb.feedr.R;
 import se.chalmers.exjobb.feedr.models.Feedback;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FeedbackListTabFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class FeedbackListTabFragment extends Fragment {
 
     private static final String ARG_COURSECODE = "courseCode";

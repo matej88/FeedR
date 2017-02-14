@@ -83,6 +83,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         private void add(DataSnapshot dataSnapshot){
             Course course = dataSnapshot.getValue(Course.class);
             course.setKey(dataSnapshot.getKey());
+
             mCourses.add(course);
 
         }
@@ -148,7 +149,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         @Override
         public void onClick(View view) {
             SharedPreferencesUtils.setCurrentCourseKey(mCourseListFragment.getContext(), mCourses.get(getAdapterPosition()).getKey());
-            //SharedPreferencesUtils.setCurrentCourseKey(mCourseListFragment.getContext(), mCourses.get(getAdapterPosition()).getKey());
+            SharedPreferencesUtils.setCurrentCourseKey(mCourseListFragment.getContext(), mCourses.get(getAdapterPosition()).getKey());
             Course course = mCourses.get(getAdapterPosition());
             mCourseSelectedListener.onCourseSelected(course);
         }

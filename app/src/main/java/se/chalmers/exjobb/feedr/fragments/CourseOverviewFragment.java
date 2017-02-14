@@ -292,6 +292,8 @@ public class CourseOverviewFragment extends Fragment {
         adapter.addFrag(fragment, "Surveys");
         Fragment fragment1 = FeedbackListTabFragment.newInstance(mCourse.getKey());
         adapter.addFrag(fragment1, "Feedbacks");
+        Fragment fragment2 = SessionsListTabFragment.newInstance(mCourse.getKey());
+        adapter.addFrag(fragment2,"Sessions");
 
         mViewPager.setAdapter(adapter);
     }

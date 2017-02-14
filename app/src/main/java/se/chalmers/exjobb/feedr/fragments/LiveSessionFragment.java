@@ -4,12 +4,16 @@ package se.chalmers.exjobb.feedr.fragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +29,8 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,19 +39,29 @@ import java.util.Map;
 import java.util.Random;
 
 import se.chalmers.exjobb.feedr.R;
+import se.chalmers.exjobb.feedr.adapters.LiveSessionAdapter;
 import se.chalmers.exjobb.feedr.models.Feedback;
 import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 
 public class LiveSessionFragment extends Fragment {
 
-    private LineGraphSeries<DataPoint> series;
-    private DatabaseReference mFeedbacksRef;
-    private DatabaseReference mDataRef;
-    private GraphView graph;
+
     private String sessionKey;
-    private ArrayList<Feedback> feeds;
-    private static int xVal  = 0;
+    private LiveSessionAdapter mAdapter;
+
+    private DatabaseReference mDataRef;
+    private DatabaseReference mFeedsRef;
+
+    private TextView mRating;
+    private TextView mNrofFeeds;
+    private RecyclerView mRecyclerView;
+
+    private Query liveQuery;
+
+    private int numberOfFeedbacks;
+    private double sessionRating;
+
     public LiveSessionFragment() {
         // Required empty public constructor
     }
@@ -54,47 +70,21 @@ public class LiveSessionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionKey = SharedPreferencesUtils.getCurrentSession(getContext());
-        feeds = new ArrayList<>();
+        String courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
+        mAdapter = new LiveSessionAdapter(this,courseKey,sessionKey);
+
         mDataRef = FirebaseDatabase.getInstance().getReference();
-        mFeedbacksRef = mDataRef.child("feedbacks");
-        Query feedbackQuery = mFeedbacksRef.orderByChild("sessionKey").equalTo(sessionKey);
-        feedbackQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> feedb = dataSnapshot.getChildren();
+        mFeedsRef = mDataRef.child("feedbacks");
 
-                for(DataSnapshot feed : feedb){
-                    Feedback f = feed.getValue(Feedback.class);
-                  addEntry(f);
-              }
-            }
+        liveQuery = mFeedsRef.orderByChild("sessionKey").equalTo(sessionKey);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+    }
 
-            }
-        });
-
-//        mSessionRef = mDataRef.child("courses").child(SharedPreferencesUtils.getCurrentCourseKey(getContext())).child("sessions").child(SharedPreferencesUtils.getCurrentSession(getContext())).child("feedbacks");
-//
-//        mSessionRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Iterable<DataSnapshot> feedb = dataSnapshot.getChildren();
-//
-//                for(DataSnapshot feed : feedb){
-//                    Feedback f = feed.getValue(Feedback.class);
-//                    addEntry(f);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        setRatings(sessionRating);
+        setFeedbackNumber(numberOfFeedbacks);
 
     }
 
@@ -104,7 +94,36 @@ public class LiveSessionFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_live_session, container, false);
 
-        graph = (GraphView) view.findViewById(R.id.graph);
+        mRating = (TextView) view.findViewById(R.id.ls_rating);
+        mNrofFeeds = (TextView) view.findViewById(R.id.ls_feedbacks);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.session_feedback_recyclerview);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        final FirebaseRecyclerAdapter<Feedback, LiveSessionFeedViewHolder> adapterX = new FirebaseRecyclerAdapter<Feedback, LiveSessionFeedViewHolder>(
+                Feedback.class,
+                R.layout.row_feedback,
+                LiveSessionFeedViewHolder.class,
+                liveQuery
+
+        ) {
+            @Override
+            protected void populateViewHolder(LiveSessionFeedViewHolder viewHolder, Feedback model, int position) {
+                final  Feedback feed = model;
+                feed.setFeedbackKey(this.getRef(position).getKey());
+                String feedback = model.getFeedback();
+                int rating = model.getRating();
+                long timestamp = model.getTimestamp();
+                boolean replied = model.isReplied();
+                boolean isTeacher = SharedPreferencesUtils.getIsTeacher(getContext());
+                viewHolder.feedback.setText(feedback);
+                viewHolder.rating.setText(Integer.toString(rating));
+                viewHolder.setReplied(replied);
+                viewHolder.setTime(timestamp);
+
+            }
+        };
+
+
 
         Button btn = (Button) view.findViewById(R.id.send);
 
@@ -123,50 +142,55 @@ public class LiveSessionFragment extends Fragment {
 
                 Feedback f = new Feedback("feed", res , unixTime, sessionKey, courseKey,false);
 
-                mFeedbacksRef.push().setValue(f);
+                mFeedsRef.push().setValue(f);
             }
         });
-        // data
-        series = new LineGraphSeries<DataPoint>();
 
-        graph.addSeries(series);
-        //customize graph
-        Viewport graphViewport = graph.getViewport();
-        graphViewport.setYAxisBoundsManual(true);
-        graphViewport.setMinY(1);
-        graphViewport.setMaxY(5);
-        graphViewport.setScrollable(true);
-
-        graphViewport.setXAxisBoundsManual(true);
-        graphViewport.setMinX(1);
-        graphViewport.setMaxX(10);
-
-        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
-        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
-
-
+        mRecyclerView.setAdapter(adapterX);
         return view;
     }
 
-    private void addEntry(Feedback f){
+    public void setFeedbackNumber(int size){
+        numberOfFeedbacks = size;
+        mNrofFeeds.setText(Integer.toString(numberOfFeedbacks));
 
+    }
+    public void setRatings(double rating){
+        sessionRating = rating;
+        String result = String.format("%.1f", sessionRating);
+        mRating.setText(result);
 
-            int rating = f.getRating();
-            long timestamp = f.getTimestamp();
+    }
 
+    public static class LiveSessionFeedViewHolder extends RecyclerView.ViewHolder {
+        private TextView feedback;
+        private TextView timestamp;
+        private TextView replied;
+        private TextView rating;
 
-            Date date = new Date();
-            date.setTime(timestamp*1000);
-
-            DataPoint dp = new DataPoint(xVal++,rating);
-
-            series.appendData(dp, true, 25 );
-
-
-
-
-
-
+        public LiveSessionFeedViewHolder(View itemView) {
+            super(itemView);
+            feedback = (TextView) itemView.findViewById(R.id.feedback_text);
+            timestamp = (TextView) itemView.findViewById(R.id.feedback_timestamp);
+            replied = (TextView) itemView.findViewById(R.id.feedback_replied);
+            rating = (TextView) itemView.findViewById(R.id.feedback_rating);
         }
+        public void setReplied(boolean rep){
+            if(rep){
+                replied.setTextColor(Color.parseColor("#229EE6"));
 
+            }
+        }
+        public void setTime(long time){
+            try{
+                DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date netDate = (new Date(time));
+                String t = sdf.format(netDate);
+                timestamp.setText(t);
+            }
+            catch(Exception ex){
+                timestamp.setText("N/A");
+            }
+        }
+    }
 }
