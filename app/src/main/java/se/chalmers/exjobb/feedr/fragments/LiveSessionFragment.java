@@ -1,41 +1,34 @@
 package se.chalmers.exjobb.feedr.fragments;
 
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.Viewport;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.Series;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
+
 import java.util.Random;
 
 import se.chalmers.exjobb.feedr.R;
@@ -46,7 +39,7 @@ import se.chalmers.exjobb.feedr.utils.SharedPreferencesUtils;
 
 public class LiveSessionFragment extends Fragment {
 
-
+    private SessionCallback mListener;
     private String sessionKey;
     private LiveSessionAdapter mAdapter;
 
@@ -120,34 +113,74 @@ public class LiveSessionFragment extends Fragment {
                 viewHolder.setReplied(replied);
                 viewHolder.setTime(timestamp);
 
+
+                if(!replied && isTeacher){
+                    viewHolder.replied.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showAddAnswerDialog(feed);
+                        }
+                    });
+                }else if(replied){
+                    viewHolder.replied.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showAnswerDialog(feed);
+                        }
+                    });
+                }
+
             }
         };
 
 
 
-        Button btn = (Button) view.findViewById(R.id.send);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                String courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
-                Random ran = new Random();
-                int low = 1;
-                int high = 6;
-                int res = ran.nextInt(high - low) + low;
-
-                long unixTime = System.currentTimeMillis() / 1000L;
-
-
-                Feedback f = new Feedback("feed", res , unixTime, sessionKey, courseKey,false);
-
-                mFeedsRef.push().setValue(f);
-            }
-        });
-
         mRecyclerView.setAdapter(adapterX);
         return view;
+    }
+
+
+    @SuppressLint("InflateParams")
+    public void showAnswerDialog(final Feedback feed){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_show_answer, null);
+        final TextView answer = (TextView) view.findViewById(R.id.show_answ_answer_et);
+        final TextView feedQuestion = (TextView) view.findViewById(R.id.show_feedback_text);
+        final String feedbackKey = feed.getFeedbackKey();
+        feedQuestion.setText(feed.getFeedback());
+        answer.setText(feed.getAnswer());
+
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    @SuppressLint("InflateParams")
+    public void showAddAnswerDialog(final Feedback feed){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_answer, null);
+        final EditText addAnswer = (EditText) view.findViewById(R.id.add_answ_answer_et);
+        final TextView feedQuestion = (TextView) view.findViewById(R.id.feedback_text);
+        feedQuestion.setText(feed.getFeedback());
+        final String feedbackKey = feed.getFeedbackKey();
+
+
+        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String answer = addAnswer.getText().toString();
+                mListener.questionReplyLive(answer, feedbackKey);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     public void setFeedbackNumber(int size){
@@ -192,5 +225,26 @@ public class LiveSessionFragment extends Fragment {
                 timestamp.setText("N/A");
             }
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SessionCallback) {
+            mListener = (SessionCallback) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement questionReply");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+    public interface SessionCallback {
+        void questionReplyLive(String answer, String feedbackKey);
+
     }
 }

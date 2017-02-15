@@ -128,7 +128,24 @@ public class CourseListFragment extends Fragment {
         mClickListener = null;
     }
 
+    @SuppressLint("InflateParams")
+    public void showDeleteCourseDialog(final Course course){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_delete_course, null);
 
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mClickListener.onDeleteCourse(course);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     @SuppressLint("InflateParams")
     public void showAddCourseDialog(final Course course){
@@ -159,5 +176,6 @@ public class CourseListFragment extends Fragment {
     public interface OnCourseSelectedListener {
         void onCourseSelected(Course c);
         void onAddCourse(Course newCourse);
+        void onDeleteCourse(Course c);
     }
 }

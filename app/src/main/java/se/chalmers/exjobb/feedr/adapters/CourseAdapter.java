@@ -62,6 +62,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        final int pos = position;
         holder.mCourseNameTextView.setText(mCourses.get(position).getName());
         holder.mCourseCodeTextView.setText(mCourses.get(position).getCode());
 
@@ -70,6 +71,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         }else{
             holder.mStudentsSubscribed.setText("0");
         }
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mCourseListFragment.showDeleteCourseDialog(mCourses.get(pos));
+                return true;
+            }
+        });
 
     }
 

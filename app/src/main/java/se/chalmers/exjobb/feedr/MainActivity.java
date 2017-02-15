@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements
         RegisterFragment.onRegisterListener,
         CourseOverviewFragment.CourseOverviewCallback,
         FeedbackListTabFragment.FeedbackTabCallback,
-        SessionsListTabFragment.OnSessionsListCallback
+        SessionsListTabFragment.OnSessionsListCallback,
+        LiveSessionFragment.SessionCallback
 
 {
     private DatabaseReference mDataRef;
@@ -411,10 +412,30 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionClicked(String sessionKey) {
+        SharedPreferencesUtils.setCurrentSessionKey(getApplicationContext(), sessionKey);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         LiveSessionFragment fragment = new LiveSessionFragment();
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack("back_to_course_overview");
         ft.commit();
+    }
+
+    @Override
+    public void questionReplyLive(String answer, String feedbackKey) {
+        DatabaseReference feedAnswer = mDataRef.child("feedbacks").child(feedbackKey);
+        feedAnswer.child("answer").setValue(answer);
+        feedAnswer.child("isReplied").setValue(true);
+    }
+
+    @Override
+    public void onDeleteCourse(Course c) {
+        String courseCode = c.getCode();
+
+        String courseKey = SharedPreferencesUtils.getCurrentCourseKey(getApplicationContext());
+
+        DatabaseReference courseRef = mDataRef.child("courses").child(courseKey);
+        courseRef.removeValue();
+
+        Toast.makeText(this, "Deleted " + courseCode, Toast.LENGTH_SHORT).show();
     }
 }

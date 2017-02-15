@@ -88,12 +88,5 @@
         android:background="#F8F9Fa"
         android:layout_below="@+id/feedbackTV"/>
 
-    <Button
-        android:text="send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/liveSession_rr"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/send" />
 
 </RelativeLayout>

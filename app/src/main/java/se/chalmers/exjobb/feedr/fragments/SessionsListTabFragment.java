@@ -84,7 +84,7 @@ public class SessionsListTabFragment extends Fragment {
             protected void populateViewHolder(SessionsViewHolder viewHolder, Session model, int position) {
                         String sessionKey = getRef(position).getKey();
 
-                        SharedPreferencesUtils.setCurrentSessionKey(getContext(),sessionKey);
+
                         int id = model.getSessionId();
                         viewHolder.mListener = mListener;
                         viewHolder.setSessionId(id);
@@ -125,13 +125,14 @@ public class SessionsListTabFragment extends Fragment {
         private String sessionK;
         private OnSessionsListCallback mListener;
 
-        public SessionsViewHolder(View itemView) {
+        public SessionsViewHolder(final View itemView) {
             super(itemView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     mListener.onSessionClicked(sessionK);
+
                 }
             });
             sessionID = (TextView) itemView.findViewById(R.id.row_session_tv);

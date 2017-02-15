@@ -58,11 +58,7 @@ public class AnswersListFragment extends Fragment {
             mQuestionKey = getArguments().getString(ARG_QUESTIONKEY);
         }
 
-        courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
         String surveyKey = SharedPreferencesUtils.getCurrentSurveyKey(getContext());
-
-        Toast.makeText(getContext(), "courseKey" + surveyKey, Toast.LENGTH_SHORT).show();
-
         courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
         mDataRef = FirebaseDatabase.getInstance().getReference();
         mAnswersRef = mDataRef.child("surveys").child(surveyKey).child("answers");

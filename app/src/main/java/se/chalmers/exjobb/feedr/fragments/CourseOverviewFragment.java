@@ -66,7 +66,7 @@ public class CourseOverviewFragment extends Fragment {
 
     // store ratings of all sesions
     private double courseRating;
-
+    private String courseKey;
     private int numberOfFeedbacks;
 
     private int numberOfSubscribers;
@@ -90,7 +90,7 @@ public class CourseOverviewFragment extends Fragment {
         }
 
         mAdapter = new CourseOverviewAdapter(this, mCourse.getKey());
-        //courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
+        courseKey = SharedPreferencesUtils.getCurrentCourseKey(getContext());
         mDataRef = FirebaseDatabase.getInstance().getReference();
 
         //get the reference for the selected course
@@ -106,14 +106,18 @@ public class CourseOverviewFragment extends Fragment {
             Course course = dataSnapshot.getValue(Course.class);
             mCourse = course;
 
-            if(course.getSessions() != null){
-                numberOfSess = course.getSessions().size();
+//            if(course.getSessions() != null){
+//                numberOfSess = course.getSessions().size();
+//
+//            }else{
+//                numberOfSess = 0;
+//            }
 
-            }else{
-                numberOfSess = 0;
+            if(course != null){
+                updateGUI(course);
             }
 
-            updateGUI(course);
+
         }
 
         @Override
@@ -236,7 +240,7 @@ public class CourseOverviewFragment extends Fragment {
                     SharedPreferencesUtils.setCurrentSessionKey(getContext(), sessionKey);
                     sessionRef.child(sessionKey).setValue(s);
                     mListener.startSession();
-                    Toast.makeText(getContext(), "The course was offline but is now online", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "The course is online", Toast.LENGTH_SHORT).show();
 
                 }else if(courseIsOnline && !switchedOn){
                     Toast.makeText(getContext(), "The course is offline", Toast.LENGTH_SHORT).show();
@@ -288,11 +292,11 @@ public class CourseOverviewFragment extends Fragment {
 
         // call getChildFragmentManager when a fragment is inside another fragment
         CourseTabViewPagerAdapter adapter = new CourseTabViewPagerAdapter(getChildFragmentManager());
-        Fragment fragment = SurveyListTabFragment.newInstance(mCourse.getKey());
+        Fragment fragment = SurveyListTabFragment.newInstance(courseKey);
         adapter.addFrag(fragment, "Surveys");
-        Fragment fragment1 = FeedbackListTabFragment.newInstance(mCourse.getKey());
+        Fragment fragment1 = FeedbackListTabFragment.newInstance(courseKey);
         adapter.addFrag(fragment1, "Feedbacks");
-        Fragment fragment2 = SessionsListTabFragment.newInstance(mCourse.getKey());
+        Fragment fragment2 = SessionsListTabFragment.newInstance(courseKey);
         adapter.addFrag(fragment2,"Sessions");
 
         mViewPager.setAdapter(adapter);
